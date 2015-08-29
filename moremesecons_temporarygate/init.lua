@@ -107,9 +107,9 @@ mesecon.register_node("moremesecons_temporarygate:temporarygate", {
 })
 
 minetest.register_craft({
-	output = "moremesecons_temporarygate:temporarygate_off",
+	output = "moremesecons_temporarygate:temporarygate_off 2",
 	recipe = {
-		{"mesecons_torch:mesecon_torch_on", "group:mesecon_conductor_craftable", "mesecons_torch:mesecon_torch_on"},
+		{"group:mesecon_conductor_craftable", "mesecons_delayer:delayer_off", "group:mesecon_conductor_craftable"},
 		{"default:wood","default:wood", "default:wood"},
 	}
 })

@@ -47,8 +47,8 @@ local teleport_nearest = function(pos)
 end
 
 minetest.register_craft({
-	output = "moremesecons_teleporter:teleporter 1",
-	recipe = {{"default:mese_cristal_fragment","default:stick","default:mese_cristal_fragment"}}
+	output = "moremesecons_teleporter:teleporter 2",
+	recipe = {{"default:diamond","default:stick","default:mese"}}
 })
 minetest.register_node("moremesecons_teleporter:teleporter", {
 	tiles = {"teleporter.png"},

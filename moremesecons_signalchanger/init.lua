@@ -69,3 +69,8 @@ mesecon.register_node("moremesecons_signalchanger:signalchanger", {
 	},
 	tiles = {"moremesecons_signalchanger_on.png"},
 })
+
+minetest.register_craft({
+	output = "moremesecons_signalchanger_off",
+	recipte = {{"group:mesecon_conductor_craftable","moremesecons_switchtorch:switchtorch_on","group:mesecon_conductor_craftable"}}
+})
