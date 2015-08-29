@@ -10,7 +10,7 @@ local register = function(pos)
 end
 
 local teleport_nearest = function(pos)
-	local MAX_DISTANCE = 8
+	local MAX_DISTANCE = 50
 	
 	-- Search the nearest player
 	local nearest = nil
@@ -27,22 +27,22 @@ local teleport_nearest = function(pos)
 	-- Search other teleporter and teleport
 	if not minetest.registered_nodes["moremesecons_teleporter:teleporter"] then return end
 	
+	local newpos = {}
 	for i = 1, #teleporters do
 		if minetest.get_node(teleporters[i]).name == "moremesecons_teleporter:teleporter" then
 			if teleporters[i].y == pos.y and teleporters[i].x == pos.x and teleporters[i].z ~= pos.z then
-				nearest:setpos({x=teleporters[i].x, y=teleporters[i].y+1, z=teleporters[i].z})
-				minetest.log("action", "Player "..nearest:get_player_name().." was teleport with a MoreMesecons Teleporter.")
-				return
+				newpos = {x=teleporters[i].x, y=teleporters[i].y+1, z=teleporters[i].z}
 			elseif teleporters[i].z == pos.z and teleporters[i].x == pos.x and teleporters[i].y ~= pos.y then
-				nearest:setpos({x=teleporters[i].x, y=teleporters[i].y+1, z=teleporters[i].z})
-				minetest.log("action", "Player "..nearest:get_player_name().." was teleport with a MoreMesecons Teleporter.")
-				return
+				newpos = {x=teleporters[i].x, y=teleporters[i].y+1, z=teleporters[i].z}
 			elseif teleporters[i].z == pos.z and teleporters[i].y == pos.y and teleporters[i].x ~= pos.x then
-				nearest:setpos({x=teleporters[i].x, y=teleporters[i].y+1, z=teleporters[i].z})
-				minetest.log("action", "Player "..nearest:get_player_name().." was teleport with a MoreMesecons Teleporter.")
-				return
+				newpos = {x=teleporters[i].x, y=teleporters[i].y+1, z=teleporters[i].z}
 			end
 		end
+	end
+	if newpos.x then
+		if vector.distance(pos, nearest:getpos()) > MAX_DISTANCE then return end
+		nearest:moveto(newpos)
+		minetest.log("action", "Player "..nearest:get_player_name().." was teleport with a MoreMesecons Teleporter.")
 	end	
 end
 
