@@ -71,6 +71,6 @@ mesecon.register_node("moremesecons_signalchanger:signalchanger", {
 })
 
 minetest.register_craft({
-	output = "moremesecons_signalchanger_off",
-	recipte = {{"group:mesecon_conductor_craftable","moremesecons_switchtorch:switchtorch_on","group:mesecon_conductor_craftable"}}
+	output = "moremesecons_signalchanger:signalchanger_off",
+	recipe = {{"group:mesecon_conductor_craftable","moremesecons_switchtorch:switchtorch_on","group:mesecon_conductor_craftable"}}
 })
