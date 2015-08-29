@@ -58,7 +58,7 @@ minetest.register_node("moremesecons_switchtorch:switchtorch_off", {
 	walkable = false,
 	paramtype2 = "wallmounted",
 	selection_box = torch_selectionbox,
-	groups = {dig_immediate = 3, not_in_creative_inventory = 1},
+	groups = {dig_immediate = 3},
 	drop = "moremesecons_switchtorch:switchtorch_on",
 	description="MoreMesecons SwitchTorch",
 	mesecons = {receptor = {

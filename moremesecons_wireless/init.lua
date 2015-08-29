@@ -45,7 +45,7 @@ minetest.register_node("moremesecons_wireless:wireless", {
 	paramtype2 = "facedir",
 	description = "Wireless",
 	walkable = true,
-	groups = {cracky=3,not_in_creative_inventory=1},
+	groups = {cracky=3},
 	mesecons = {effector = {
 		action_on = wireless_activate,
 		action_off = wireless_deactivate
