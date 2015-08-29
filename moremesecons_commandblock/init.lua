@@ -1,4 +1,4 @@
-accepted_commands = {"say", "tell"} -- Authorized commands. Any to accept all.
+local accepted_commands = {"say", "tell"} -- Authorized commands. Any to accept all.
 
 local function initialize_data(meta)
 	local commands = meta:get_string("commands")
