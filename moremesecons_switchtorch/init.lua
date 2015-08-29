@@ -60,7 +60,6 @@ minetest.register_node("moremesecons_switchtorch:switchtorch_off", {
 	selection_box = torch_selectionbox,
 	groups = {dig_immediate = 3},
 	drop = "moremesecons_switchtorch:switchtorch_on",
-	description="MoreMesecons SwitchTorch",
 	mesecons = {receptor = {
 		state = mesecon.state.off,
 		rules = torch_get_output_rules
@@ -73,6 +72,7 @@ minetest.register_node("moremesecons_switchtorch:switchtorch_off", {
 })
 
 minetest.register_node("moremesecons_switchtorch:switchtorch_on", {
+	descrption = "Switch Torch",
 	drawtype = "torchlike",
 	tiles = {"jeija_torches_on.png", "jeija_torches_on_ceiling.png", "jeija_torches_on_side.png"},
 	inventory_image = "jeija_torches_on.png",
