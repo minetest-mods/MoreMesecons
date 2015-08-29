@@ -40,7 +40,7 @@ local teleport_nearest = function(pos)
 		end
 	end
 	if newpos.x then
-		if vector.distance(pos, nearest:getpos()) > MAX_DISTANCE then return end
+		if vector.distance(newpos, nearest:getpos()) > MAX_DISTANCE then return end
 		nearest:moveto(newpos)
 		minetest.log("action", "Player "..nearest:get_player_name().." was teleport with a MoreMesecons Teleporter.")
 	end	
