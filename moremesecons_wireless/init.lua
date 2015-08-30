@@ -40,7 +40,7 @@ local wireless_deactivate = function(pos)
 end
 
 minetest.register_node("moremesecons_wireless:wireless", {
-	tiles = {"wireless.png"},
+	tiles = {"moremesecons_wireless.png"},
 	paramtype = "light",
 	paramtype2 = "facedir",
 	description = "Wireless",
@@ -66,7 +66,7 @@ minetest.register_craft({
 	output = "moremesecons_wireless:wireless 2",
 	recipe = {
 		{"group:mesecon_conductor_craftable", "", "group:mesecon_conductor_craftable"},
-		{"", "mesecons_torch:torch_on", ""},
+		{"", "mesecons_torch:mesecon_torch_on", ""},
 		{"group:mesecon_conductor_craftable", "", "group:mesecon_conductor_craftable"},
 	}
 })

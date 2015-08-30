@@ -30,7 +30,7 @@ minetest.register_craft({
 			{"","default:apple",""}}
 })
 minetest.register_node("moremesecons_playerkiller:playerkiller", {
-	tiles = {"top.png", "top.png", "side.png", "side.png", "side.png", "side.png"},
+	tiles = {"moremesecons_playerkiller_top.png", "moremesecons_playerkiller_top.png", "moremesecons_playerkiller_side.png", "moremesecons_playerkiller_side.png", "moremesecons_playerkiller_side.png", "moremesecons_playerkiller_side.png"},
 	paramtype = "light",
 	walkable = true,
 	groups = {cracky=3},

@@ -51,7 +51,7 @@ minetest.register_craft({
 	recipe = {{"default:diamond","default:stick","default:mese"}}
 })
 minetest.register_node("moremesecons_teleporter:teleporter", {
-	tiles = {"teleporter.png"},
+	tiles = {"moremesecons_teleporter.png"},
 	paramtype = "light",
 	walkable = true,
 	groups = {cracky=3},

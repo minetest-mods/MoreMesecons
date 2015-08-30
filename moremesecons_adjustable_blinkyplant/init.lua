@@ -24,7 +24,7 @@ end
 mesecon.register_node("moremesecons_adjustable_blinkyplant:adjustable_blinky_plant", {
 	description="Adjustable Blinky Plant",
 	drawtype = "plantlike",
-	inventory_image = "jeija_blinky_plant_off.png",
+	inventory_image = "moremesecons_blinky_plant_off.png",
 	paramtype = "light",
 	walkable = false,
 	sounds = default.node_sound_leaves_defaults(),
@@ -44,11 +44,11 @@ mesecon.register_node("moremesecons_adjustable_blinkyplant:adjustable_blinky_pla
 		toggle_timer(pos, true)
 	end,
 },{
-	tiles = {"jeija_blinky_plant_off.png"},
+	tiles = {"moremesecons_blinky_plant_off.png"},
 	groups = {dig_immediate=3},
 	mesecons = {receptor = { state = mesecon.state.off }}
 },{
-	tiles = {"jeija_blinky_plant_on.png"},
+	tiles = {"moremesecons_blinky_plant_on.png"},
 	groups = {dig_immediate=3, not_in_creative_inventory=1},
 	mesecons = {receptor = { state = mesecon.state.on }},
 })

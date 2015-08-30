@@ -36,7 +36,7 @@ local torch_get_input_rules = function(node)
 end
 
 minetest.register_craft({
-	output = "moremesecons_switchtorch:switchtorch_off 4",
+	output = "moremesecons_switchtorch:switchtorch_on 4",
 	recipe = {
 	{"default:stick"},
 	{"group:mesecon_conductor_craftable"},}
@@ -52,8 +52,8 @@ local torch_selectionbox =
 
 minetest.register_node("moremesecons_switchtorch:switchtorch_off", {
 	drawtype = "torchlike",
-	tiles = {"jeija_torches_off.png", "jeija_torches_off_ceiling.png", "jeija_torches_off_side.png"},
-	inventory_image = "jeija_torches_off.png",
+	tiles = {"moremesecons_switchtorch_off.png", "moremesecons_switchtorch_off_ceiling.png", "moremesecons_switchtorch_off_side.png"},
+	inventory_image = "moremesecons_switchtorch_off.png",
 	paramtype = "light",
 	walkable = false,
 	paramtype2 = "wallmounted",
@@ -72,11 +72,11 @@ minetest.register_node("moremesecons_switchtorch:switchtorch_off", {
 })
 
 minetest.register_node("moremesecons_switchtorch:switchtorch_on", {
-	descrption = "Switch Torch",
+	description = "Switch Torch",
 	drawtype = "torchlike",
-	tiles = {"jeija_torches_on.png", "jeija_torches_on_ceiling.png", "jeija_torches_on_side.png"},
-	inventory_image = "jeija_torches_on.png",
-	wield_image = "jeija_torches_on.png",
+	tiles = {"moremesecons_switchtorch_on.png", "moremesecons_switchtorch_on_ceiling.png", "moremesecons_switchtorch_on_side.png"},
+	inventory_image = "moremesecons_switchtorch_on.png",
+	wield_image = "moremesecons_switchtorch_on.png",
 	paramtype = "light",
 	sunlight_propagates = true,
 	walkable = false,

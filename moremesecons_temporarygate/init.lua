@@ -103,13 +103,21 @@ mesecon.register_node("moremesecons_temporarygate:temporarygate", {
 			"moremesecons_temporarygate_sides_on.png"
 		},
 		groups = {bendy=2,snappy=1,dig_immediate=2, not_in_creative_inventory=1},
-		mesecons = {receptor = {state = mesecon.state.on, rules = temporarygate_get_output_rules}},
+		mesecons = {
+			receptor = {
+				state = mesecon.state.on,
+				rules = temporarygate_get_output_rules
+			},
+			effector = {
+				rules = temporarygate_get_input_rules,
+			}
+		},
 })
 
 minetest.register_craft({
 	output = "moremesecons_temporarygate:temporarygate_off 2",
 	recipe = {
-		{"group:mesecon_conductor_craftable", "mesecons_delayer:delayer_off", "group:mesecon_conductor_craftable"},
+		{"group:mesecon_conductor_craftable", "mesecons_delayer:delayer_off_1", "group:mesecon_conductor_craftable"},
 		{"default:wood","default:wood", "default:wood"},
 	}
 })

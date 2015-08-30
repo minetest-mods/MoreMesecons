@@ -78,5 +78,5 @@ end
 minetest.register_craft({
 	type = "shapeless",
 	output = "moremesecons_dual_delayer:dual_delayer_00 2",
-	recipe = {"mesecons_delayer:delayer_off", "mesecons_delayer:delayer_off"}
+	recipe = {"mesecons_delayer:delayer_off_1", "mesecons_delayer:delayer_off_1"}
 })
