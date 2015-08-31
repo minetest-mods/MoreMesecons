@@ -1,4 +1,4 @@
-teleporters = {}
+local teleporters = {}
 
 local register = function(pos)
 	local meta = minetest.env:get_meta(pos)
@@ -63,7 +63,13 @@ minetest.register_node("moremesecons_teleporter:teleporter", {
 	sounds = default.node_sound_stone_defaults(),
 	on_construct = function(pos)
 		register(pos)
-	end
+	end,
+	on_destruct = function(pos)
+		local RID = minetest.get_meta(pos):get_int("RID")
+		if RID then 
+			table.remove(teleporters, RID)
+		end
+	end,
 })
 
 

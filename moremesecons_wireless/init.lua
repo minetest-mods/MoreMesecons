@@ -1,4 +1,4 @@
-wireless = {}
+local wireless = {}
 
 local register = function(pos)
 	local meta = minetest.env:get_meta(pos)
@@ -55,6 +55,12 @@ minetest.register_node("moremesecons_wireless:wireless", {
 		local meta = minetest.get_meta(pos)
    		meta:set_string("formspec", "field[channel;channel;${channel}]")
    		register(pos)
+	end,
+	on_destruct = function(pos)
+		local RID = minetest.get_meta(pos):get_int("RID")
+		if RID then 
+			table.remove(wireless, RID)
+		end
 	end,
 	on_receive_fields = function(pos, formname, fields, sender)
 		local meta = minetest.get_meta(pos)
