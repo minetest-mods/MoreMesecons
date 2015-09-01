@@ -1,17 +1,17 @@
 local wireless = {}
+local wireless_rids = {}
+
 
 local register = function(pos)
-	local meta = minetest.env:get_meta(pos)
-	local RID = meta:get_int("RID")
+	local RID = vector.get_data_from_pos(wireless_rids, pos.z,pos.y,pos.x)
 	if wireless[RID] == nil then
 		table.insert(wireless, pos)
-		meta:set_int("RID", #wireless)
+		vector.set_data_to_pos(wireless_rids, pos.z,pos.y,pos.x, #wireless)
 	end
 end
 
 local wireless_activate = function(pos)
 	if not minetest.registered_nodes["moremesecons_wireless:wireless"] then return end
-	local meta = minetest.get_meta(pos)
 	local channel_first_wireless = nil
 	
 	for i = 1, #wireless do
@@ -57,9 +57,10 @@ minetest.register_node("moremesecons_wireless:wireless", {
    		register(pos)
 	end,
 	on_destruct = function(pos)
-		local RID = minetest.get_meta(pos):get_int("RID")
-		if RID then 
+		local RID = vector.get_data_from_pos(wireless_rids, pos.z,pos.y,pos.x)
+		if RID then
 			table.remove(wireless, RID)
+			vector.remove_data_from_pos(wireless_rids, pos.z,pos.y,pos.x)
 		end
 	end,
 	on_receive_fields = function(pos, formname, fields, sender)
