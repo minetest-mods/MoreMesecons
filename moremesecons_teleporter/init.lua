@@ -1,11 +1,12 @@
 local teleporters = {}
+local teleporters_rids = {}
+
 
 local register = function(pos)
-	local meta = minetest.env:get_meta(pos)
-	local RID = meta:get_int("RID")
-	if teleporters[RID] == nil then
+	local RID = vector.get_data_from_pos(teleporters_rids, pos.z,pos.y,pos.x)
+	if not RID then
 		table.insert(teleporters, pos)
-		meta:set_int("RID", #teleporters)
+		vector.set_data_to_pos(teleporters_rids, pos.z,pos.y,pos.x, #teleporters)
 	end
 end
 
@@ -65,9 +66,10 @@ minetest.register_node("moremesecons_teleporter:teleporter", {
 		register(pos)
 	end,
 	on_destruct = function(pos)
-		local RID = minetest.get_meta(pos):get_int("RID")
-		if RID then 
+		local RID = vector.get_data_from_pos(teleporters_rids, pos.z,pos.y,pos.x)
+		if RID then
 			table.remove(teleporters, RID)
+			vector.remove_data_from_pos(teleporters_rids, pos.z,pos.y,pos.x)
 		end
 	end,
 })

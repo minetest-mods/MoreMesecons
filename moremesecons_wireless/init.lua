@@ -4,7 +4,7 @@ local wireless_rids = {}
 
 local register = function(pos)
 	local RID = vector.get_data_from_pos(wireless_rids, pos.z,pos.y,pos.x)
-	if wireless[RID] == nil then
+	if not RID then
 		table.insert(wireless, pos)
 		vector.set_data_to_pos(wireless_rids, pos.z,pos.y,pos.x, #wireless)
 	end
