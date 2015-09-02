@@ -1,5 +1,3 @@
--- MOREMESECONS TEMPORARY GATE
-
 local temporarygate_get_output_rules = function(node)
 	local rules = {{x = 0, y = 0, z = 1}}
 	for i = 0, node.param2 do

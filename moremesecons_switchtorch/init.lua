@@ -1,6 +1,3 @@
---MOREMESECONS SWITCHTORCH
---file copy on mesecons torch by Jeija
-
 local rotate_torch_rules = function (rules, param2)
 	if param2 == 5 then
 		return mesecon.rotate_rules_right(rules)

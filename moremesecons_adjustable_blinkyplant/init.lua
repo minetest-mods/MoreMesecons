@@ -1,6 +1,3 @@
--- The ADJUSTBALE_BLINKY_PLANT
--- File copy on blinky_plant by Jeija
-
 local toggle_timer = function (pos, restart)
 	local timer = minetest.get_node_timer(pos)
 	local meta = minetest.get_meta(pos)
