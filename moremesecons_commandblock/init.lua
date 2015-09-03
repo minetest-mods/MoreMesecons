@@ -1,11 +1,12 @@
-local accepted_commands = {"say", "tell"} -- Authorized commands. Any to accept all.
+local accepted_commands = {"tell"} -- Authorized commands. Any to accept all.
+local NEAREST_MAX_DISTANCE = 8
 
 local function initialize_data(meta)
 	local commands = meta:get_string("commands")
 	meta:set_string("formspec",
 		"invsize[9,5;]" ..
 		"textarea[0.5,0.5;8.5,4;commands;Commands;"..commands.."]" ..
-		"label[1,3.8;@nearest, @farthest, and @random are replaced by the respective player names]" ..
+		"label[1,3.8;@nearest is replaced by the nearest player name ("..tostring(NEAREST_MAX_DISTANCE).." nodes max for the nearest distance)".."]" ..
 		"button_exit[3.3,4.5;2,1;submit;Submit]")
 	local owner = meta:get_string("owner")
 	if owner == "" then
@@ -51,8 +52,8 @@ local function receive_fields(pos, formname, fields, sender)
 end
 
 local function resolve_commands(commands, pos)
-	local nearest, farthest = nil, nil
-	local min_distance, max_distance = math.huge, -1
+	local nearest = nil
+	local min_distance = math.huge
 	local players = minetest.get_connected_players()
 	for index, player in pairs(players) do
 		local distance = vector.distance(pos, player:getpos())
@@ -60,16 +61,9 @@ local function resolve_commands(commands, pos)
 			min_distance = distance
 			nearest = player:get_player_name()
 		end
-		if distance > max_distance then
-			max_distance = distance
-			farthest = player:get_player_name()
-		end
 	end
-	local random = players[math.random(#players)]:get_player_name()
-	commands = commands:gsub("@nearest", nearest)
-	commands = commands:gsub("@farthest", farthest)
-	commands = commands:gsub("@random", random)
-	return commands
+	new_commands = commands:gsub("@nearest", nearest)
+	return new_commands, min_distance, new_commands ~= commands
 end
 
 local function commandblock_action_on(pos, node)
@@ -85,7 +79,11 @@ local function commandblock_action_on(pos, node)
 		return
 	end
 
-	local commands = resolve_commands(meta:get_string("commands"), pos)
+	local commands, distance, nearest_in_commands = resolve_commands(meta:get_string("commands"), pos)
+	if distance > NEAREST_MAX_DISTANCE and nearest_in_commands then
+		minetest.chat_send_player(owner, "The nearest player is too far to use his name in the commands of a craftable command block.")
+		return
+	end
 	for _, command in pairs(commands:split("\n")) do
 		local pos = command:find(" ")
 		local cmd, param = command, ""
@@ -102,7 +100,7 @@ local function commandblock_action_on(pos, node)
 			end
 		end
 		if not is_an_authorized_command and #accepted_commands ~= 0 then
-			minetest.chat_send_player(owner, "You can not execute this command with a craftable command block ! This event will be reported.")
+			minetest.chat_send_player(owner, "You can not execute the command "..cmd.." with a craftable command block ! This event will be reported.")
 			minetest.log("action", "Player "..owner.." tryed to execute an unauthorized command with a craftable command block.")
 			return
 		end
