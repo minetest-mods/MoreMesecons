@@ -84,7 +84,7 @@ minetest.register_node("moremesecons_adjustable_player_detector:player_detector_
 })
 
 minetest.register_craft({
-	output = 'moremesecons_player_detector:player_detector_off',
+	output = 'moremesecons_adjustable_player_detector:player_detector_off',
 	recipe = {
 		{"mesecons_detector:object_detector_off"},
 		{"default:mese_crystal_fragment"}
