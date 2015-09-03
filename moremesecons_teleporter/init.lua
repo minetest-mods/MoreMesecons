@@ -41,10 +41,13 @@ local teleport_nearest = function(pos)
 		end
 	end
 	if newpos.x then
-		if vector.distance(newpos, nearest:getpos()) > MAX_DISTANCE then return end
-		nearest:moveto(newpos)
-		minetest.log("action", "Player "..nearest:get_player_name().." was teleport with a MoreMesecons Teleporter.")
-	end	
+		if vector.distance(newpos, nearest:getpos()) > MAX_DISTANCE then newpos = {} end -- If the is another teleporter BUT too far, delete newpos.
+	end
+	if not newpos.x then
+		newpos = {x=pos.x, y=pos.y+1, z=pos.z} -- If newpos doesn't exist, teleport on the actual teleporter.
+	end
+	nearest:moveto(newpos)
+	minetest.log("action", "Player "..nearest:get_player_name().." was teleport with a MoreMesecons Teleporter.")	
 end
 
 minetest.register_craft({
