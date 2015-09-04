@@ -6,8 +6,7 @@ local kill_nearest_player = function(pos)
 	local min_distance = MAX_DISTANCE
 	for index, player in pairs(minetest.get_connected_players()) do
 		local distance = vector.distance(pos, player:getpos())
-		if distance < MAX_DISTANCE
-		and distance < min_distance then
+		if distance < min_distance then
 			min_distance = distance
 			nearest = player
 		end
@@ -21,6 +20,11 @@ local kill_nearest_player = function(pos)
 	local owner = minetest.get_meta(pos):get_string("owner")
 	if not owner then
 		-- maybe some mod placed it
+		return
+	end
+	
+	if owner == nearest:get_player_name() then
+		-- don't kill the owner !
 		return
 	end
 

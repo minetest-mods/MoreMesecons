@@ -11,11 +11,12 @@ local register = function(pos)
 end
 
 local teleport_nearest = function(pos)
-	local MAX_DISTANCE = 50
+	local MAX_TELEPORTATION_DISTANCE = 50
+	local MAX_PLAYER_DISTANCE = 25
 	
 	-- Search the nearest player
 	local nearest = nil
-	local min_distance = math.huge
+	local min_distance = MAX_PLAYER_DISTANCE
 	local players = minetest.get_connected_players()
 	for index, player in pairs(players) do
 		local distance = vector.distance(pos, player:getpos())
@@ -23,6 +24,11 @@ local teleport_nearest = function(pos)
 			min_distance = distance
 			nearest = player
 		end
+	end
+	
+	if not nearest then
+		-- If there is no nearest player (maybe too far...)
+		return
 	end
 	
 	-- Search other teleporter and teleport
@@ -41,7 +47,10 @@ local teleport_nearest = function(pos)
 		end
 	end
 	if newpos.x then
-		if vector.distance(newpos, nearest:getpos()) > MAX_DISTANCE then newpos = {} end -- If the is another teleporter BUT too far, delete newpos.
+		-- If there is another teleporter BUT too far, delete newpos.
+		if vector.distance(newpos, pos) > MAX_TELEPORTATION_DISTANCE then
+			newpos = {}
+		end
 	end
 	if not newpos.x then
 		newpos = {x=pos.x, y=pos.y+1, z=pos.z} -- If newpos doesn't exist, teleport on the actual teleporter.
