@@ -16,18 +16,20 @@ end
 
 -- Functions that are called after the delay time
 
-local temporarygate_activate = function(pos, node)
-	local def = minetest.registered_nodes[node.name]
-	local meta = minetest.get_meta(pos)
-	local time = tonumber(meta:get_string("time"))
-	if time ~= nil then
-		minetest.swap_node(pos, {name = "moremesecons_temporarygate:temporarygate_on", param2 = node.param2})
-		mesecon.receptor_on(pos)
-		minetest.after(time, function(pos, node)
-			mesecon.receptor_off(pos)
-			minetest.swap_node(pos, {name = "moremesecons_temporarygate:temporarygate_off", param2 = node.param2})
-		end, pos, node)
+local function temporarygate_activate(pos, node)
+	-- using a meta string allows writing the time in hexadecimals
+	local time = tonumber(minetest.get_meta(pos):get_string("time"))
+	if not time then
+		return
 	end
+	node.name = "moremesecons_temporarygate:temporarygate_on"
+	minetest.swap_node(pos, node)
+	mesecon.receptor_on(pos)
+	minetest.after(time, function(pos, node)
+		mesecon.receptor_off(pos)
+		node.name = "moremesecons_temporarygate:temporarygate_off"
+		minetest.swap_node(pos, node)
+	end, pos, node)
 end
 
 boxes = {{ -6/16, -8/16, -6/16, 6/16, -7/16, 6/16 },		-- the main slab
@@ -62,12 +64,12 @@ mesecon.register_node("moremesecons_temporarygate:temporarygate", {
 	is_ground_content = true,
 	sounds = default.node_sound_stone_defaults(),
 	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
-   		meta:set_string("formspec", "field[time;time;${time}]")
+   		minetest.get_meta(pos):set_string("formspec", "field[time;time;${time}]")
 	end,
 	on_receive_fields = function(pos, formname, fields, sender)
-		local meta = minetest.get_meta(pos)
-		meta:set_string("time", fields.time)
+		if fields.time then
+			minetest.get_meta(pos):set_string("time", fields.time)
+		end
 	end
 },{
 		tiles = {

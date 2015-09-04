@@ -27,9 +27,6 @@ local function object_detector_on_receive_fields(pos, formname, fields)
 	if r then
 		meta:set_int("radius", r)
 	end
-	if not meta:get_string("formspec") then
-		make_formspec(meta)
-	end
 end
 
 -- returns true if player was found, false if not
@@ -61,7 +58,7 @@ local object_detector_digiline = {
 				return
 			end
 			meta:set_string("scanname", msg)
-			if not meta:get_string("formspec") then
+			if meta:get_string("formspec") ~= "" then
 				make_formspec(meta)
 			end
 		end,
@@ -69,7 +66,7 @@ local object_detector_digiline = {
 }
 
 minetest.register_node("moremesecons_adjustable_player_detector:player_detector_off", {
-	tiles = {"default_steel_block.png", "default_steel_block.png", "moremesecons_player_detector_off.png", "moremesecons_player_detector_off.png", "moremesecons_player_detector_off.png", "moremesecons_player_detector_off.png"},
+	tiles = {"default_steel_block.png", "default_steel_block.png", "moremesecons_player_detector_off.png"},
 	paramtype = "light",
 	walkable = true,
 	groups = {cracky=3},
@@ -85,7 +82,7 @@ minetest.register_node("moremesecons_adjustable_player_detector:player_detector_
 })
 
 minetest.register_node("moremesecons_adjustable_player_detector:player_detector_on", {
-	tiles = {"default_steel_block.png", "default_steel_block.png", "moremesecons_player_detector_on.png", "moremesecons_player_detector_on.png", "moremesecons_player_detector_on.png", "moremesecons_player_detector_on.png"},
+	tiles = {"default_steel_block.png", "default_steel_block.png", "moremesecons_player_detector_on.png"},
 	paramtype = "light",
 	walkable = true,
 	groups = {cracky=3,not_in_creative_inventory=1},
@@ -108,8 +105,8 @@ minetest.register_craft({
 	}
 })
 
-minetest.register_abm(
-	{nodenames = {"moremesecons_adjustable_player_detector:player_detector_off"},
+minetest.register_abm({
+	nodenames = {"moremesecons_adjustable_player_detector:player_detector_off"},
 	interval = 1.0,
 	chance = 1,
 	action = function(pos)
@@ -120,8 +117,8 @@ minetest.register_abm(
 	end,
 })
 
-minetest.register_abm(
-	{nodenames = {"moremesecons_adjustable_player_detector:player_detector_on"},
+minetest.register_abm({
+	nodenames = {"moremesecons_adjustable_player_detector:player_detector_on"},
 	interval = 1.0,
 	chance = 1,
 	action = function(pos)
