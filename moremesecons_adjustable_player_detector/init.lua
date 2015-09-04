@@ -2,8 +2,7 @@
 -- Detects players in a certain radius
 -- The radius can be changes by right-click (by default 6)
 
-local object_detector_make_formspec = function (pos)
-	local meta = minetest.get_meta(pos)
+local function make_formspec(meta)
 	meta:set_string("formspec", "size[9,5]" ..
 		"field[0.3,  0;9,2;scanname;Name of player to scan for (empty for any):;${scanname}]"..
 		"field[0.3,1.5;4,2;digiline_channel;Digiline Channel (optional):;${digiline_channel}]"..
@@ -11,26 +10,41 @@ local object_detector_make_formspec = function (pos)
 		"button_exit[3.5,3.5;2,3;;Save]")
 end
 
-local object_detector_on_receive_fields = function(pos, formname, fields)
-	if not fields.scanname or not fields.digiline_channel then return end;
+local function object_detector_make_formspec(pos)
+	make_formspec(minetest.get_meta(pos))
+end
+
+local function object_detector_on_receive_fields(pos, formname, fields)
+	if not fields.scanname
+	or not fields.digiline_channel then
+		return
+	end
 
 	local meta = minetest.get_meta(pos)
 	meta:set_string("scanname", fields.scanname)
 	meta:set_string("digiline_channel", fields.digiline_channel)
-	if tonumber(fields.radius) then meta:set_int("radius", tonumber(fields.radius)) end
-	object_detector_make_formspec(pos)
+	local r = tonumber(fields.radius)
+	if r then
+		meta:set_int("radius", r)
+	end
+	if not meta:get_string("formspec") then
+		make_formspec(meta)
+	end
 end
 
 -- returns true if player was found, false if not
 local object_detector_scan = function (pos)
 	local meta = minetest.get_meta(pos)
+	local scanname = meta:get_string("scanname")
+	local scan_all = scanname == ""
 	local radius = meta:get_int("radius")
-	if radius == 0 then radius = 6 end
-	local objs = minetest.get_objects_inside_radius(pos, radius)
-	for k, obj in pairs(objs) do
+	if radius == 0 then
+		radius = 6
+	end
+	for _,obj in pairs(minetest.get_objects_inside_radius(pos, radius)) do
 		local isname = obj:get_player_name() -- "" is returned if it is not a player; "" ~= nil!
-		local scanname = meta:get_string("scanname")
-		if (isname == scanname and isname ~= "") or (isname  ~= "" and scanname == "") then -- player with scanname found or not scanname specified
+		if isname ~= ""
+		and (scan_all or isname == scanname) then -- player with scanname found or not scanname specified
 			return true
 		end
 	end
@@ -43,9 +57,12 @@ local object_detector_digiline = {
 		action = function (pos, node, channel, msg)
 			local meta = minetest.get_meta(pos)
 			local active_channel = meta:get_string("digiline_channel")
-			if channel == active_channel then
-				meta:set_string("scanname", msg)
-				object_detector_make_formspec(pos)
+			if channel ~= active_channel then
+				return
+			end
+			meta:set_string("scanname", msg)
+			if not meta:get_string("formspec") then
+				make_formspec(meta)
 			end
 		end,
 	}
