@@ -2,9 +2,11 @@
 
 Based on Mesecons by Jeija  
 By @paly2  
-With the participation of @LeMagnesium (bugfix), @Ataron (textures), and @JAPP (texture).
+With the participation of @LeMagnesium (bugfix), @Ataron (textures), @JAPP (texture), and @HybridDog (many things).
 
-MoreMesecons is a mod for minetest wich add some mesecons items.
+MoreMesecons is a mod for minetest wich adds some mesecons items.
+
+![Screenshot](https://imgrush.com/XcGejYXNTbdm.png)
 
 ### New items
 
@@ -16,6 +18,6 @@ MoreMesecons is a mod for minetest wich add some mesecons items.
 * `Sayer` : This node sends a message to every players inside a radius of 8 nodes.
 * `Signal Changer` : If it receives a signal on its pin "F", it turns on. If ti receives a signal on its pin "O", it turns off.
 * `Switch Torch` : It connects just like Mesecons Torch. If it receives a signal, it turns on, and if it receives a second signal, it turns off.
-* `Teleporter` : If you place one teleporter, if it receives a mesecons, it teleports the nearest player on itself. If you place two teleporters on the same axis, if one receives a mesecons signal, it teleports the nearest player on the second.
+* `Teleporter` : If you place one teleporter, if it receives a mesecons, it teleports the nearest player on itself. If you place two teleporters on the same axis, if one receives a mesecons signal, it teleports the nearest player on the second (with a maximal distance of 50 nodes by default). The player teleporter must be inside a radius of 25 nodes.
 * `Temporary Gate` : If it receives a mesecons signal, whatever its duration, a mesecons signal is send with a fixed duration. You can change it by right-click (in seconds) (you can write for example 0.2 to send a pulse, or 20 to send long signals).
 * `Wireless` : Place 2 (or more) wireless somewhere. Change their channel by right-click. If you send a signal to a wireless, every wireless wich have the same channel will send the signal.
