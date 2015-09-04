@@ -38,3 +38,9 @@ minetest.register_node("moremesecons_sayer:sayer", {
 		action_on = sayer_activate
 	}}
 })
+
+minetest.register_craft({
+	output = "moremesecons_sayer:sayer 2",
+	recipe = {{"mesecons_luacontroller:luacontroller0000", "mesecons_noteblock:noteblock"},
+		{"group:wood", "group:wood"}}
+})
