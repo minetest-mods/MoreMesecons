@@ -48,15 +48,16 @@ local torch_selectionbox =
 }
 
 minetest.register_node("moremesecons_switchtorch:switchtorch_off", {
+	description = "Switch Torch",
+	inventory_image = "moremesecons_switchtorch_on.png",
+	wield_image = "moremesecons_switchtorch_on.png",
 	drawtype = "torchlike",
 	tiles = {"moremesecons_switchtorch_off.png", "moremesecons_switchtorch_off_ceiling.png", "moremesecons_switchtorch_off_side.png"},
-	inventory_image = "moremesecons_switchtorch_off.png",
 	paramtype = "light",
 	walkable = false,
 	paramtype2 = "wallmounted",
 	selection_box = torch_selectionbox,
-	groups = {dig_immediate = 3, not_in_creative_inventory = 1},
-	drop = "moremesecons_switchtorch:switchtorch_on",
+	groups = {dig_immediate = 3},
 	mesecons = {receptor = {
 		state = mesecon.state.off,
 		rules = torch_get_output_rules
@@ -69,27 +70,20 @@ minetest.register_node("moremesecons_switchtorch:switchtorch_off", {
 })
 
 minetest.register_node("moremesecons_switchtorch:switchtorch_on", {
-	description = "Switch Torch",
 	drawtype = "torchlike",
 	tiles = {"moremesecons_switchtorch_on.png", "moremesecons_switchtorch_on_ceiling.png", "moremesecons_switchtorch_on_side.png"},
-	inventory_image = "moremesecons_switchtorch_on.png",
-	wield_image = "moremesecons_switchtorch_on.png",
 	paramtype = "light",
 	sunlight_propagates = true,
 	walkable = false,
 	paramtype2 = "wallmounted",
 	selection_box = torch_selectionbox,
-	groups = {dig_immediate=3},
+	groups = {dig_immediate=3, not_in_creative_inventory = 1},
+	drop = "moremesecons_switchtorch:switchtorch_off",
 	light_source = LIGHT_MAX-5,
 	mesecons = {receptor = {
 		state = mesecon.state.on,
 		rules = torch_get_output_rules
 	}},
-
-	on_construct = function(pos)-- For EndPower
-   		local meta = minetest.get_meta(pos)
-   		meta:set_int("EndPower", 1) -- 1 for true, 0 for false
-	end
 })
 
 minetest.register_abm({
