@@ -40,9 +40,10 @@ local object_detector_scan = function (pos)
 	end
 	for _,obj in pairs(minetest.get_objects_inside_radius(pos, radius)) do
 		if not obj:is_player() then
-			local isname = (obj:get_luaentity()).name
+			local luaentity = obj:get_luaentity()
+			local isname = luaentity.name
 			if isname
-			and (scan_all or isname == scanname) then -- entity with scanname found or not scanname specified
+			and (scan_all or isname == scanname or (isname == "__builtin:item" and luaentity.itemstring == scanname)) then -- entity with scanname found or not scanname specified
 				return true
 			end
 		end
