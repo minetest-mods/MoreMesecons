@@ -69,6 +69,7 @@ minetest.register_node("moremesecons_wireless:wireless", {
 			table.remove(wireless, RID)
 			vector.remove_data_from_pos(wireless_rids, pos.z,pos.y,pos.x)
 		end
+		mesecon.receptor_off(pos)
 	end,
 	on_receive_fields = function(pos, formname, fields, sender)
 		local meta = minetest.get_meta(pos)
