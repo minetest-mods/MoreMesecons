@@ -110,10 +110,28 @@ function is_jammed(pos)
 end
 
 mesecon.register_node("moremesecons_wireless:jammer", {
-	description="Wireless Jammer",
+	description = "Wireless Jammer",
 	paramtype = "light",
+	drawtype = "nodebox",
 },{
-	tiles = {"moremesecons_jammer_off.png"},
+	tiles = {"mesecons_wire_off.png^moremesecons_jammer_top.png", "moremesecons_jammer_bottom.png", "mesecons_wire_off.png^moremesecons_jammer_side_off.png"},
+	node_box = {
+		type = "fixed",
+		fixed = {
+			-- connection
+			{-1/16, -0.5, -0.5, 1/16, -7/16, 0.5},
+			{-0.5, -0.5, -1/16, 0.5, -7/16, 1/16},
+
+			--stabilization
+			{-1/16, -7/16, -1/16, 1/16, -6/16, 1/16},
+
+			-- fields
+			{-7/16, -6/16, -7/16, 7/16, -4/16, 7/16},
+			{-5/16, -4/16, -5/16, 5/16, -3/16, 5/16},
+			{-3/16, -3/16, -3/16, 3/16, -2/16, 3/16},
+			{-1/16, -2/16, -1/16, 1/16, -1/16, 1/16},
+		},
+	},
 	groups = {dig_immediate=2},
 	mesecons = {effector = {
 		action_on = function(pos)
@@ -122,7 +140,24 @@ mesecon.register_node("moremesecons_wireless:jammer", {
 		end
 	}}
 },{
-	tiles = {"moremesecons_jammer_on.png"},
+	tiles = {"mesecons_wire_on.png^moremesecons_jammer_top.png", "moremesecons_jammer_bottom.png", "mesecons_wire_on.png^moremesecons_jammer_side_on.png"},
+	node_box = {
+		type = "fixed",
+		fixed = {
+			-- connection
+			{-1/16, -0.5, -0.5, 1/16, -7/16, 0.5},
+			{-0.5, -0.5, -1/16, 0.5, -7/16, 1/16},
+
+			--stabilization
+			{-1/16, -7/16, -1/16, 1/16, 5/16, 1/16},
+
+			-- fields
+			{-7/16, -6/16, -7/16, 7/16, -4/16, 7/16},
+			{-5/16, -3/16, -5/16, 5/16, -1/16, 5/16},
+			{-3/16, 0, -3/16, 3/16, 2/16, 3/16},
+			{-1/16, 3/16, -1/16, 1/16, 5/16, 1/16},
+		},
+	},
 	groups = {dig_immediate=2, not_in_creative_inventory=1},
 	mesecons = {effector = {
 		action_off = function(pos)
