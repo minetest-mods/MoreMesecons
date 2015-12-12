@@ -117,5 +117,6 @@ minetest.register_abm({
 	nodenames = {"moremesecons_jammer:jammer_on"},
 	interval = 5,
 	chance = 1,
+	catch_up = false,
 	action = add_jammer
 })
