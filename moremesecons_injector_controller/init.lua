@@ -82,8 +82,6 @@ mesecon.register_node("moremesecons_injector_controller:injector_controller", {
 })
 
 minetest.register_craft({
-	output = "mesecons_blinkyplant:blinky_plant_off 1",
-	recipe = {	{"","group:mesecon_conductor_craftable",""},
-			{"","group:mesecon_conductor_craftable",""},
-			{"default:sapling","default:sapling","default:sapling"}}
+	output = "moremesecons_injector_controller:injector_controller_off",
+	recipe = {{"mesecons_blinkyplant:blinky_plant_off","mesecons_gates:and_off"}}
 })

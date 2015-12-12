@@ -16,9 +16,10 @@ MoreMesecons is a mod for minetest wich adds some mesecons items.
 * `Dual Delayer` : If it receives a mesecons signal, port 1 turns on immediatly and port 2 turns on 0.4 seconds later. At the end of the signal, port 2 turns off immediatly and port 1 turns off 0.4 secondes later. For example, this is useful for double extenders.
 * `Entity Detector` : You can use it to detect an entity. You can choose the entity to detect by right-click (use itemstring, for example "mobs:rat". To detect a dropped item, write "__builtin:item". To detect a specific dropped item, write its itemstring (for example "default:cobble")).
 * `Igniter` : This node is a lighter that ignites ajacent flammable nodes (including TNT).
+* `Injector Controller` : This node is usefull to activate/deactivate a pipeworks filter injector : it sends a blinky signal.
 * `Player Killer` : This block kills the nearest player (with a maximal distance of 8 blocks by default) (if this player isn't its owner) when it receives a mesecons signal.
 * `Sayer` : This node sends a message to every players inside a radius of 8 nodes.
-* `Signal Changer` : If it receives a signal on its pin "F", it turns on. If ti receives a signal on its pin "O", it turns off.
+* `Signal Changer` : If it receives a signal on its pin "F", it turns on. If it receives a signal on its pin "O", it turns off.
 * `Switch Torch` : It connects just like Mesecons Torch. If it receives a signal, it turns on, and if it receives a second signal, it turns off.
 * `Teleporter` : If you place one teleporter, if it receives a mesecons, it teleports the nearest player on itself. If you place two teleporters on the same axis, if one receives a mesecons signal, it teleports the nearest player on the second (with a maximal distance of 50 nodes by default). The player teleporter must be inside a radius of 25 nodes.
 * `Temporary Gate` : If it receives a mesecons signal, whatever its duration, a mesecons signal is send with a fixed duration. You can change it by right-click (in seconds) (you can write for example 0.2 to send a pulse, or 20 to send long signals).
