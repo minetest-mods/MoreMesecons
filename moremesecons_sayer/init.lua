@@ -1,5 +1,5 @@
 local MAX_DISTANCE = 8
-local use_speech_dispatcher = false
+local use_speech_dispatcher = true
 
 local sayer_activate
 if use_speech_dispatcher
