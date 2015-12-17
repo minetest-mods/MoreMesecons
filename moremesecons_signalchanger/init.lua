@@ -4,7 +4,8 @@ local nodebox = {
 }
 
 local function signalchanger_get_output_rules(node)
-	local rules = {{x=1, y=0, z=0}}
+	local rules = {{x=1, y=0, z=0},
+			{x=-1, y=0, z=0}}
 	for i = 0, node.param2 do
 		rules = mesecon.rotate_rules_left(rules)
 	end
@@ -25,10 +26,12 @@ local update = function(pos, node, link, newstate)
 	local input_on = meta:get_int("input_on") == 1
 	local input_off = meta:get_int("input_off") == 1
 	if input_on then
-		mesecon.receptor_on(pos, signalchanger_get_output_rules(node))
+		mesecon.receptor_on(pos, {signalchanger_get_output_rules(node)[1]})
+		mesecon.receptor_off(pos, {signalchanger_get_output_rules(node)[2]})
 		minetest.swap_node(pos, {name = "moremesecons_signalchanger:signalchanger_on", param2 = node.param2})
 	elseif input_off then
-		mesecon.receptor_off(pos, signalchanger_get_output_rules(node))
+		mesecon.receptor_off(pos, {signalchanger_get_output_rules(node)[1]})
+		mesecon.receptor_on(pos, {signalchanger_get_output_rules(node)[2]})
 		minetest.swap_node(pos, {name = "moremesecons_signalchanger:signalchanger_off", param2 = node.param2})
 	end
 end
@@ -46,7 +49,6 @@ mesecon.register_node("moremesecons_signalchanger:signalchanger", {
 	groups = {dig_immediate = 2},
 	mesecons = {
 		receptor = {
-			state = mesecon.state.off,
 			rules = signalchanger_get_output_rules
 		},
 		effector = {
@@ -55,11 +57,14 @@ mesecon.register_node("moremesecons_signalchanger:signalchanger", {
 		},
 	},
 	tiles = {"moremesecons_signalchanger_off.png"},
+	on_construct = function(pos)
+		local node = minetest.get_node(pos)
+		mesecon.receptor_on(pos, {signalchanger_get_output_rules(node)[2]})
+	end
 },{
 	groups = {dig_immediate = 2, not_in_creative_inventory = 1},
 	mesecons = {
 		receptor = {
-			state = mesecon.state.on,
 			rules = signalchanger_get_output_rules,
 		},
 		effector = {
