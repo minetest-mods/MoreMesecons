@@ -25,3 +25,6 @@ MoreMesecons is a mod for minetest wich adds some mesecons items.
 * `Temporary Gate` : If it receives a mesecons signal, whatever its duration, a mesecons signal is send with a fixed duration. You can change it by right-click (in seconds) (you can write for example 0.2 to send a pulse, or 20 to send long signals).
 * `Wireless` : Place 2 (or more) wireless somewhere. Change their channel by right-click. If you send a signal to a wireless, every wireless wich have the same channel will send the signal.
 * `Wireless Jammer` : If it receives a mesecons signal, it deactivates all wireless (receptors) in a radius of 15 nodes.
+
+TODO:  
+— add luacontroller template tool (see https://forum.minetest.net/viewtopic.php?p=201894#p201894)
