@@ -57,11 +57,7 @@ local function get_selection_formspec(pname, selected_template)
 end
 
 local function is_luacontroller(pos)
-		local node = minetest.get_node(pos)
-		if node.name ~= ":luacontroller" then
-			return false
-		end
-
+	return string.match(minetest.get_node(pos).name, "mesecons_luacontroller:luacontroller%d%d%d%d")
 end
 
 minetest.register_tool("moremesecons_luacontroller_tool:luacontroller_template_tool", {

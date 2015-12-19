@@ -3,8 +3,7 @@ local teleporters_rids = {}
 
 
 local register = function(pos)
-	local RID = vector.get_data_from_pos(teleporters_rids, pos.z,pos.y,pos.x)
-	if not RID then
+	if not vector.get_data_from_pos(teleporters_rids, pos.z,pos.y,pos.x) then
 		table.insert(teleporters, pos)
 		vector.set_data_to_pos(teleporters_rids, pos.z,pos.y,pos.x, #teleporters)
 	end
@@ -13,7 +12,7 @@ end
 local teleport_nearest = function(pos)
 	local MAX_TELEPORTATION_DISTANCE = 50
 	local MAX_PLAYER_DISTANCE = 25
-	
+
 	-- Search the nearest player
 	local nearest = nil
 	local min_distance = MAX_PLAYER_DISTANCE
@@ -25,15 +24,15 @@ local teleport_nearest = function(pos)
 			nearest = player
 		end
 	end
-	
+
 	if not nearest then
 		-- If there is no nearest player (maybe too far...)
 		return
 	end
-	
+
 	-- Search other teleporter and teleport
 	if not minetest.registered_nodes["moremesecons_teleporter:teleporter"] then return end
-	
+
 	local newpos = {}
 	for i = 1, #teleporters do
 		if minetest.get_node(teleporters[i]).name == "moremesecons_teleporter:teleporter" then
@@ -56,7 +55,7 @@ local teleport_nearest = function(pos)
 		newpos = {x=pos.x, y=pos.y+1, z=pos.z} -- If newpos doesn't exist, teleport on the actual teleporter.
 	end
 	nearest:moveto(newpos)
-	minetest.log("action", "Player "..nearest:get_player_name().." was teleport with a MoreMesecons Teleporter.")	
+	minetest.log("action", "Player "..nearest:get_player_name().." was teleport with a MoreMesecons Teleporter.")
 end
 
 minetest.register_craft({
@@ -89,9 +88,10 @@ minetest.register_node("moremesecons_teleporter:teleporter", {
 
 minetest.register_abm({
 	nodenames = {"moremesecons_teleporter:teleporter"},
-	interval=1,
+	interval=5,
 	chance=1,
-	action = function(pos) 
+	catch_up = false,
+	action = function(pos)
 		register(pos)
 	end
 })
