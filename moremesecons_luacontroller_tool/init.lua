@@ -32,7 +32,12 @@ local function get_selection_formspec(pname, selected_template)
 	-- current player name
 	pname = pname or pdata[pname].player_name
 	selected_template = selected_template or pdata[pname].template_name
-	local spec = "size[3,1]"..
+
+	local buttonset = "button[0,2;1,1;button;set]"
+	local buttonadd = "button[1,2;1,1;button;add]"
+	local buttonsave = "button[2,2;1,1;button;save]"
+
+	local spec = "size[3,3]"..
 
 	-- show available players, field player_name, current player name is the selected one
 		"dropdown[0,0;3,1;player_name;"..
@@ -45,7 +50,7 @@ local function get_selection_formspec(pname, selected_template)
 		";"..selected_template.."]"..
 
 	-- show selected template
-		"multiline["..templates[pname][selected_template]..
+		"multiline["..templates[pname][selected_template].."]"..
 
 		buttonset..
 
@@ -81,7 +86,7 @@ minetest.register_tool("moremesecons_luacontroller_tool:luacontroller_template_t
 			player_name = pname,
 			template_name = next(templates[pname]),
 		}
-		minetest.show_formspec(pname, "moremesecons:luacontroller_tool", spec)
+		minetest.show_formspec(pname, "moremesecons:luacontroller_tool", get_selection_formspec(pname))
 
 
 	end,
@@ -122,21 +127,21 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 	local meta = minetest.get_meta(pos)
 
-	if fields.set then
+	if fields.button == "set" then
 		-- replace the code of the luacontroller with the template
 		meta:set_string("code", templates[pdata[pname].player_name][pdata[pname].template_name])
 		minetest.chat_send_player(pname, "code set to template at "..vector.pos_to_string(pos))
 		return
 	end
 
-	if fields.add then
+	if fields.button == "add" then
 		-- add the template to the end of the code of the luacontroller
 		meta:set_string("code", meta:get_string("code")..templates[pdata[pname].player_name][pdata[pname].template_name])
 		minetest.chat_send_player(pname, "code added to luacontroller at "..vector.pos_to_string(pos))
 		return
 	end
 
-	if fields.save then
+	if fields.button == "save" then
 		-- save the template, when you try to change others' templates, yours become changed
 		local savename = fields.save_name or pdata[pname].template_name
 		local code = fields.template_code or templates[pdata[pname].player_name][pdata[pname].template_name]
