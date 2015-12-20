@@ -17,7 +17,7 @@ local function fill_formspec_dropdown_list(t, selected)
 	table.sort(it)
 	local txt = ""
 	for i = 1,num do
-		txt = txt..i -- add available indices
+		txt = txt..it[i] -- add available indices
 		if i ~= num then
 			txt = txt..","
 		end
@@ -92,6 +92,22 @@ minetest.register_tool("moremesecons_luacontroller_tool:luacontroller_template_t
 	end,
 })
 
+-- Luacontroller reset_meta function, by Jeija
+local function reset_meta(pos, code, errmsg)
+	local meta = minetest.get_meta(pos)
+	meta:set_string("code", code)
+	code = minetest.formspec_escape(code or "")
+	errmsg = minetest.formspec_escape(errmsg or "")
+	meta:set_string("formspec", "size[10,8]"..
+		"background[-0.2,-0.25;10.4,8.75;jeija_luac_background.png]"..
+		"textarea[0.2,0.6;10.2,5;code;;"..code.."]"..
+		"image_button[3.75,6;2.5,1;jeija_luac_runbutton.png;program;]"..
+		"image_button_exit[9.72,-0.25;0.425,0.4;jeija_close_window.png;exit;]"..
+		"label[0.1,5;"..errmsg.."]")
+	meta:set_int("heat", 0)
+	meta:set_int("luac_id", math.random(1, 65535))
+end
+
 minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if formname ~= "moremesecons:luacontroller_tool"
 	or fields.quit
@@ -113,7 +129,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if fields.template_name then
 		-- show selected template of that player
 		minetest.show_formspec(pname, "moremesecons:luacontroller_tool",
-			get_selection_formspec(nil, fields.template_name)
+			get_selection_formspec(pname, fields.template_name)
 		)
 		pdata[pname].template_name = fields.template_name
 		return
@@ -129,14 +145,14 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 	if fields.button == "set" then
 		-- replace the code of the luacontroller with the template
-		meta:set_string("code", templates[pdata[pname].player_name][pdata[pname].template_name])
+		reset_meta(pos, templates[pdata[pname].player_name][pdata[pname].template_name])
 		minetest.chat_send_player(pname, "code set to template at "..vector.pos_to_string(pos))
 		return
 	end
 
 	if fields.button == "add" then
 		-- add the template to the end of the code of the luacontroller
-		meta:set_string("code", meta:get_string("code")..templates[pdata[pname].player_name][pdata[pname].template_name])
+		reset_meta(pos, meta:get_string("code")..templates[pdata[pname].player_name][pdata[pname].template_name])
 		minetest.chat_send_player(pname, "code added to luacontroller at "..vector.pos_to_string(pos))
 		return
 	end
