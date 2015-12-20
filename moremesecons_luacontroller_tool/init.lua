@@ -16,13 +16,19 @@ local function fill_formspec_dropdown_list(t, selected)
 	num = num-1
 	table.sort(it)
 	local txt = ""
+	local selected_id
 	for i = 1,num do
-		txt = txt..it[i] -- add available indices
+		local t = it[i]
+		if not selected_id
+		and t == selected then
+			selected_id = i
+		end
+		txt = txt..t -- add available indices
 		if i ~= num then
 			txt = txt..","
 		end
 	end
-	return txt
+	return txt..";"..selected_id.."]"
 	--spec = string.sub(spec, 1, -2)
 end
 
@@ -30,33 +36,26 @@ local pdata = {}
 
 local function get_selection_formspec(pname, selected_template)
 	-- current player name
-	pname = pname or pdata[pname].player_name
 	selected_template = selected_template or pdata[pname].template_name
 
-	local buttonset = "button[0,2;1,1;button;set]"
-	local buttonadd = "button[1,2;1,1;button;add]"
-	local buttonsave = "button[2,2;1,1;button;save]"
-
-	local spec = "size[3,3]"..
+	local spec = "size[10,10]"..
 
 	-- show available players, field player_name, current player name is the selected one
-		"dropdown[0,0;3,1;player_name;"..
+		"dropdown[0,0;3;player_name;"..
 		fill_formspec_dropdown_list(templates, pname)..
-		";"..pname.."]"..
 
 	-- show templates of pname
-		"dropdown[0,1;3,1;template_name;"..
+		"dropdown[0,1;3;template_name;"..
 		fill_formspec_dropdown_list(templates[pname], selected_template)..
-		";"..selected_template.."]"..
 
 	-- show selected template
-		"multiline["..templates[pname][selected_template].."]"..
+		"textarea[0,4;7,7;template_code;template code:;"..templates[pname][selected_template].."]"..
 
-		buttonset..
+		"button[0,2;1,1;button;set]"..
 
-		buttonadd..
+		"button[1,2;1,1;button;add]"..
 
-		buttonsave
+		"button[2,2;1,1;button;save]"
 
 	return spec
 end
@@ -92,7 +91,7 @@ minetest.register_tool("moremesecons_luacontroller_tool:luacontroller_template_t
 	end,
 })
 
--- Luacontroller reset_meta function, by Jeija
+--[[ Luacontroller reset_meta function, by Jeija
 local function reset_meta(pos, code, errmsg)
 	local meta = minetest.get_meta(pos)
 	meta:set_string("code", code)
@@ -106,7 +105,7 @@ local function reset_meta(pos, code, errmsg)
 		"label[0.1,5;"..errmsg.."]")
 	meta:set_int("heat", 0)
 	meta:set_int("luac_id", math.random(1, 65535))
-end
+end--]]
 
 minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if formname ~= "moremesecons:luacontroller_tool"
@@ -114,6 +113,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	or not player then
 		return
 	end
+
+	minetest.chat_send_all(dump(fields))
 
 	local pname = player:get_player_name()
 
@@ -129,7 +130,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if fields.template_name then
 		-- show selected template of that player
 		minetest.show_formspec(pname, "moremesecons:luacontroller_tool",
-			get_selection_formspec(pname, fields.template_name)
+			get_selection_formspec(pdata[pname].player_name, fields.template_name)
 		)
 		pdata[pname].template_name = fields.template_name
 		return
@@ -145,28 +146,28 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 	if fields.button == "set" then
 		-- replace the code of the luacontroller with the template
-		reset_meta(pos, templates[pdata[pname].player_name][pdata[pname].template_name])
+		meta:set_string("code", templates[fields.player_name][fields.template_name])
 		minetest.chat_send_player(pname, "code set to template at "..vector.pos_to_string(pos))
 		return
 	end
 
 	if fields.button == "add" then
 		-- add the template to the end of the code of the luacontroller
-		reset_meta(pos, meta:get_string("code")..templates[pdata[pname].player_name][pdata[pname].template_name])
+		meta:set_string("code", meta:get_string("code")..templates[fields.player_name][fields.template_name])
 		minetest.chat_send_player(pname, "code added to luacontroller at "..vector.pos_to_string(pos))
 		return
 	end
 
 	if fields.button == "save" then
 		-- save the template, when you try to change others' templates, yours become changed
-		local savename = fields.save_name or pdata[pname].template_name
-		local code = fields.template_code or templates[pdata[pname].player_name][pdata[pname].template_name]
+		local savename = fields.save_name or fields.template_name
+		local code = fields.template_code or templates[fields.player_name][fields.template_name]
 		--[[
 		if not code then
 			minetest.chat_send_player(pname, "you can't save if you didn't change the code")
 			return
 		end--]]
-		local template_name = pdata[pname].template_name
+		local template_name = savename
 		templates[pname][template_name] = code
 		minetest.chat_send_player(pname, "template "..pname.."/"..template_name.." saved")
 		return
