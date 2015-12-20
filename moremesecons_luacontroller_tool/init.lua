@@ -1,10 +1,11 @@
 local templates = {
 	singleplayer = {fir = "daw", mak = "delay()"},
+	["MoreMesecons"] = {mag = "dawasd", mak = "delrq"},
 }
 
 -- when adding templates minetest.formspec_escape(string) should be used, even for the names
 -- this way it doesn't work for multiplayer (missing tests at receiving)
--- formspec, luacontroller identification, saving etc. is unfinished
+-- formspec, saving etc. is unfinished
 
 -- used for the dropdown formspec element
 local function fill_formspec_dropdown_list(t, selected)
@@ -35,9 +36,6 @@ end
 local pdata = {}
 
 local function get_selection_formspec(pname, selected_template)
-	-- current player name
-	selected_template = selected_template or pdata[pname].template_name
-
 	local spec = "size[10,10]"..
 
 	-- show available players, field player_name, current player name is the selected one
@@ -60,8 +58,15 @@ local function get_selection_formspec(pname, selected_template)
 	return spec
 end
 
+-- tests if the node is a luacontroller
 local function is_luacontroller(pos)
 	return string.match(minetest.get_node(pos).name, "mesecons_luacontroller:luacontroller%d%d%d%d")
+end
+
+-- do not localize the function directly here to support possible overwritten luacontrollers
+local luac_def = minetest.registered_nodes["mesecons_luacontroller:luacontroller0000"]
+local function set_luacontroller_code(pos, code)
+	luac_def.on_receive_fields(pos, nil, {code=code, program=""})
 end
 
 minetest.register_tool("moremesecons_luacontroller_tool:luacontroller_template_tool", {
@@ -80,12 +85,12 @@ minetest.register_tool("moremesecons_luacontroller_tool:luacontroller_template_t
 		end
 
 		local pname = player:get_player_name()
-		pdata[pname] = {
+		pdata[pname] = pdata[pname] or {
 			pos = pos,
 			player_name = pname,
 			template_name = next(templates[pname]),
 		}
-		minetest.show_formspec(pname, "moremesecons:luacontroller_tool", get_selection_formspec(pname))
+		minetest.show_formspec(pname, "moremesecons:luacontroller_tool", get_selection_formspec(pdata[pname].player_name, pdata[pname].template_name))
 
 
 	end,
@@ -118,16 +123,18 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 	local pname = player:get_player_name()
 
-	if fields.player_name then
+	if fields.player_name
+	and fields.player_name ~= pdata[pname].player_name then
 		-- show available templates of that player
 		minetest.show_formspec(pname, "moremesecons:luacontroller_tool",
-			get_selection_formspec(fields.player_name)
+			get_selection_formspec(fields.player_name, pdata[pname].template_name)
 		)
 		pdata[pname].player_name = fields.player_name
 		return
 	end
 
-	if fields.template_name then
+	if fields.template_name
+	and fields.template_name ~= pdata[pname].template_name then
 		-- show selected template of that player
 		minetest.show_formspec(pname, "moremesecons:luacontroller_tool",
 			get_selection_formspec(pdata[pname].player_name, fields.template_name)
@@ -146,14 +153,14 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 	if fields.button == "set" then
 		-- replace the code of the luacontroller with the template
-		meta:set_string("code", templates[fields.player_name][fields.template_name])
+		set_luacontroller_code(pos, templates[fields.player_name][fields.template_name])
 		minetest.chat_send_player(pname, "code set to template at "..vector.pos_to_string(pos))
 		return
 	end
 
 	if fields.button == "add" then
 		-- add the template to the end of the code of the luacontroller
-		meta:set_string("code", meta:get_string("code")..templates[fields.player_name][fields.template_name])
+		set_luacontroller_code(pos, meta:get_string("code").."\r"..templates[fields.player_name][fields.template_name])
 		minetest.chat_send_player(pname, "code added to luacontroller at "..vector.pos_to_string(pos))
 		return
 	end
