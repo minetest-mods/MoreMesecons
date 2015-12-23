@@ -36,49 +36,41 @@ local function is_jammed(pos)
 	return false
 end
 
-minetest.after(0, function() -- After load all mods
-	function mesecon.turnon(pos, link) -- Overwrite mesecons function.
-		local frontiers = {{pos = pos, link = link}}
+minetest.after(0, function() -- After load all mods, override some functions
+	local current_pos
 
-		local depth = 1
-		while frontiers[depth] do
-			local f = frontiers[depth]
-			local node = minetest.get_node_or_nil(f.pos)
+	local actual_node_get = minetest.get_node_or_nil
+	local function temp_node_get(pos, ...)
+		current_pos = pos
+		return actual_node_get(pos, ...)
+	end
 
-			-- area not loaded, postpone action
-			if not node then
-				mesecon.queue:add_action(f.pos, "turnon", {link}, nil, true)
-			elseif is_jammed(f.pos) then -- JAMMER
-				return
-			elseif mesecon.is_conductor_off(node, f.link) then
-				local rules = mesecon.conductor_get_rules(node)
+	local actual_turnon = mesecon.turnon
+	function mesecon.turnon(...)
+		minetest.get_node_or_nil = temp_node_get
+		--local v = actual_turnon(pos, ...)  commented because mesecon.turnon now doesn't return sth
+		actual_turnon(...)
+		minetest.get_node_or_nil = actual_node_get
+		current_pos = nil
+		--return v
+	end
 
-				minetest.swap_node(f.pos, {name = mesecon.get_conductor_on(node, f.link),
-					param2 = node.param2})
-
-				-- call turnon on neighbors: normal rules
-				for _, r in ipairs(mesecon.rule2meta(f.link, rules)) do
-					local np = mesecon.addPosRule(f.pos, r)
-
-					-- area not loaded, postpone action
-					if not minetest.get_node_or_nil(np) then
-						mesecon.queue:add_action(np, "turnon", {rulename},
-							nil, true)
-					else
-						local links = mesecon.rules_link_rule_all(f.pos, r)
-						for _, l in ipairs(links) do
-							table.insert(frontiers, {pos = np, link = l})
-						end
-					end
-				end
-			elseif mesecon.is_effector(node.name) then
-				mesecon.changesignal(f.pos, node, f.link, mesecon.state.on, depth)
-				if mesecon.is_effector_off(node.name) then
-					mesecon.activate(f.pos, node, f.link, depth)
-				end
-			end
-			depth = depth + 1
+	local actual_is_conductor_off = mesecon.is_conductor_off
+	function mesecon.is_conductor_off(...)
+		if current_pos
+		and is_jammed(current_pos) then
+			return
 		end
+		return actual_is_conductor_off(...)
+	end
+
+	local actual_is_effector = mesecon.is_effector
+	function mesecon.is_effector(...)
+		if current_pos
+		and is_jammed(current_pos) then
+			return
+		end
+		return actual_is_effector(...)
 	end
 end)
 
