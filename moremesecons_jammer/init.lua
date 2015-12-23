@@ -36,41 +36,59 @@ local function is_jammed(pos)
 	return false
 end
 
-minetest.after(0, function() -- After load all mods, override some functions
-	local current_pos
+minetest.after(0, function() -- After loading all mods, override some functions
+	local jammed
 
 	local actual_node_get = minetest.get_node_or_nil
 	local function temp_node_get(pos, ...)
-		current_pos = pos
-		return actual_node_get(pos, ...)
+		local node = actual_node_get(pos, ...)
+		if jammed == nil
+		and node then
+			jammed = is_jammed(pos)
+		end
+		return node
+	end
+
+	local actual_is_conductor_off = mesecon.is_conductor_off
+	local function temp_is_conductor_off(...)
+		if jammed then
+			-- go to the next elseif, there's is_effector
+			return
+		end
+		local v = actual_is_conductor_off(...)
+		if v then
+			-- it continues to the next frontier
+			jammed = nil
+		end
+		return v
+	end
+
+	local actual_is_effector = mesecon.is_effector
+	local function temp_is_effector(...)
+		local abort_here = jammed
+		-- the last elseif before continuing, jammed needs to be nil then
+		jammed = nil
+		if abort_here then
+			return
+		end
+		return actual_is_effector(...)
 	end
 
 	local actual_turnon = mesecon.turnon
 	function mesecon.turnon(...)
+		--set those to the temporary functions
 		minetest.get_node_or_nil = temp_node_get
-		--local v = actual_turnon(pos, ...)  commented because mesecon.turnon now doesn't return sth
+		mesecon.is_conductor_off = temp_is_conductor_off
+		mesecon.is_effector = temp_is_effector
+
 		actual_turnon(...)
+
 		minetest.get_node_or_nil = actual_node_get
-		current_pos = nil
-		--return v
-	end
+		mesecon.is_conductor_off = actual_is_conductor_off
+		mesecon.is_effector = actual_is_effector
 
-	local actual_is_conductor_off = mesecon.is_conductor_off
-	function mesecon.is_conductor_off(...)
-		if current_pos
-		and is_jammed(current_pos) then
-			return
-		end
-		return actual_is_conductor_off(...)
-	end
-
-	local actual_is_effector = mesecon.is_effector
-	function mesecon.is_effector(...)
-		if current_pos
-		and is_jammed(current_pos) then
-			return
-		end
-		return actual_is_effector(...)
+		-- safety
+		jammed = nil
 	end
 end)
 
