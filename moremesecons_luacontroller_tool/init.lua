@@ -1,7 +1,56 @@
+--[[
+vector_extras there: https://github.com/HybridDog/vector_extras
+]]
+
 local templates = {
 	singleplayer = {fir = "daw", mak = "delay()"},
-	["MoreMesecons"] = {mag = "dawasd", mak = "delrq"},
+	MoreMesecons = {mag = "dawasd", mak = "delrq"},
 }
+--local compression_level =
+
+local file_path = minetest.get_worldpath().."/MoreMesecons_lctt"
+
+-- load templates from a compressed file
+local templates_file = io.open(file_path, "rb")
+if templates_file then
+	local templates_raw = templates_file:read("*all")
+	io.close(templates_file)
+	if templates_raw
+	and templates_raw ~= "" then
+		for name,t in pairs(minetest.deserialize(minetest.decompress(templates_raw))) do
+			templates[name] = t
+		end
+	end
+end
+
+-- the save function
+local function save_to_file()
+	local templates_file = io.open(file_path, "w")
+	if not templates_file then
+		minetest.log("error", "[MoreMesecons] Could not open file for saving!")
+		return
+	end
+	local player_templates = table.copy(templates)
+	player_templates.MoreMesecons = nil
+	templates_file:write(minetest.compress(minetest.serialize(player_templates)))
+	io.close(templates_file)
+end
+
+-- save doesn't save more than every 10s to disallow spamming
+local saving
+local function save()
+	if saving then
+		return
+	end
+	saving = true
+	minetest.after(16, function()
+		save_to_file()
+		saving = false
+	end)
+end
+
+minetest.register_on_shutdown(save_to_file)
+
 
 -- when adding templates minetest.formspec_escape(string) should be used, even for the names
 -- this way it doesn't work for multiplayer (missing tests at receiving)
@@ -69,7 +118,7 @@ local function set_luacontroller_code(pos, code)
 	luac_def.on_receive_fields(pos, nil, {code=code, program=""})
 end
 
-minetest.register_tool("moremesecons_luacontroller_tool:luacontroller_template_tool", {
+minetest.register_tool("moremesecons_luacontroller_tool:lctt", {
 	description = "luacontroller template tool",
 	inventory_image = "moremesecons_luacontroller_tool.png",
 
@@ -174,8 +223,10 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			minetest.chat_send_player(pname, "you can't save if you didn't change the code")
 			return
 		end--]]
+		code = minetest.formspec_escape(code)
 		local template_name = savename
 		templates[pname][template_name] = code
+		save()
 		minetest.chat_send_player(pname, "template "..pname.."/"..template_name.." saved")
 		return
 	end
