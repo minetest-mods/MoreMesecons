@@ -6,7 +6,7 @@ local templates = {
 	singleplayer = {fir = "daw", mak = "delay()"},
 	MoreMesecons = {mag = "dawasd", mak = "delrq"},
 }
---local compression_level =
+
 
 local file_path = minetest.get_worldpath().."/MoreMesecons_lctt"
 
@@ -52,9 +52,8 @@ end
 minetest.register_on_shutdown(save_to_file)
 
 
--- when adding templates minetest.formspec_escape(string) should be used, even for the names
--- this way it doesn't work for multiplayer (missing tests at receiving)
--- formspec, saving etc. is unfinished
+-- test if it works
+-- add savename textfield to formspec
 
 -- used for the dropdown formspec element
 local function fill_formspec_dropdown_list(t, selected)
@@ -78,13 +77,17 @@ local function fill_formspec_dropdown_list(t, selected)
 			txt = txt..","
 		end
 	end
-	return txt..";"..selected_id.."]"
+	return txt..";"..selected_id or 1 .."]"
 	--spec = string.sub(spec, 1, -2)
 end
 
 local pdata = {}
 
 local function get_selection_formspec(pname, selected_template)
+	-- templates might be removed by someone while changing sth in formspec
+	local pl_templates = templates[pname] or templates[next(templates)]
+	local template_code = pl_templates[selected_template] or pl_templates[next(pl_templates)]
+
 	local spec = "size[10,10]"..
 
 	-- show available players, field player_name, current player name is the selected one
@@ -93,10 +96,10 @@ local function get_selection_formspec(pname, selected_template)
 
 	-- show templates of pname
 		"dropdown[0,1;3;template_name;"..
-		fill_formspec_dropdown_list(templates[pname], selected_template)..
+		fill_formspec_dropdown_list(pl_templates, selected_template)..
 
 	-- show selected template
-		"textarea[0,4;7,7;template_code;template code:;"..templates[pname][selected_template].."]"..
+		"textarea[0,4;7,7;template_code;template code:;"..template_code.."]"..
 
 		"button[0,2;1,1;button;set]"..
 
@@ -161,6 +164,21 @@ local function reset_meta(pos, code, errmsg)
 	meta:set_int("luac_id", math.random(1, 65535))
 end--]]
 
+-- used to avoid possibly crashes
+local function get_code_or_nil(pname, player_name, template_name)
+	local player_templates = templates[player_name]
+	if not player_templates then
+		minetest.chat_send_player(pname, "error: "..player_name.." doesn't have templates now")
+		return
+	end
+	local code = player_templates[template_name]
+	if not code then
+		minetest.chat_send_player(pname, "error: "..template_name.." doesn't exist now")
+		return
+	end
+	return code
+end
+
 minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if formname ~= "moremesecons:luacontroller_tool"
 	or fields.quit
@@ -202,30 +220,53 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 	if fields.button == "set" then
 		-- replace the code of the luacontroller with the template
-		set_luacontroller_code(pos, templates[fields.player_name][fields.template_name])
-		minetest.chat_send_player(pname, "code set to template at "..vector.pos_to_string(pos))
+		local code = get_code_or_nil(pname, fields.player_name, fields.template_name)
+		if code then
+			set_luacontroller_code(pos, code)
+			minetest.chat_send_player(pname, "code set to template at "..vector.pos_to_string(pos))
+		end
 		return
 	end
 
 	if fields.button == "add" then
 		-- add the template to the end of the code of the luacontroller
-		set_luacontroller_code(pos, meta:get_string("code").."\r"..templates[fields.player_name][fields.template_name])
-		minetest.chat_send_player(pname, "code added to luacontroller at "..vector.pos_to_string(pos))
+		local code = get_code_or_nil(pname, fields.player_name, fields.template_name)
+		if code then
+			set_luacontroller_code(pos, meta:get_string("code").."\r"..code)
+			minetest.chat_send_player(pname, "code added to luacontroller at "..vector.pos_to_string(pos))
+		end
 		return
 	end
 
 	if fields.button == "save" then
 		-- save the template, when you try to change others' templates, yours become changed
-		local savename = fields.save_name or fields.template_name
-		local code = fields.template_code or templates[fields.player_name][fields.template_name]
-		--[[
+		local savename = fields.template_name
+		if fields.save_name
+		and fields.save_name ~= ""
+		and fields.save_name ~= savename then
+			savename = minetest.formspec_escape(fields.save_name)
+		end
+		local code = fields.template_code
 		if not code then
-			minetest.chat_send_player(pname, "you can't save if you didn't change the code")
+			minetest.chat_send_player(pname, "error: template code missing")
 			return
-		end--]]
+		end
+		templates[pname] = templates[pname] or {}
+		if code == "" then
+			templates[pname][savename] = nil
+			if not next(templates[pname]) then
+				templates[pname] = nil
+			end
+			minetest.chat_send_player(pname, "template removed")
+			save()
+			return
+		end
 		code = minetest.formspec_escape(code)
-		local template_name = savename
-		templates[pname][template_name] = code
+		if templates[pname][savename] == code then
+			minetest.chat_send_player(pname, "template not saved because it didn't change")
+			return
+		end
+		templates[pname][savename] = code
 		save()
 		minetest.chat_send_player(pname, "template "..pname.."/"..template_name.." saved")
 		return
