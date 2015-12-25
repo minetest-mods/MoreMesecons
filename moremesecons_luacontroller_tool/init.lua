@@ -49,7 +49,11 @@ local function save()
 	end)
 end
 
-minetest.register_on_shutdown(save_to_file)
+minetest.register_on_shutdown(function()
+	if saving then
+		save_to_file()
+	end
+end)
 
 
 -- test if it works
