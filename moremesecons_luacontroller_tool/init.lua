@@ -89,27 +89,39 @@ local pdata = {}
 
 local function get_selection_formspec(pname, selected_template)
 	-- templates might be removed by someone while changing sth in formspec
-	local pl_templates = templates[pname] or templates[next(templates)]
-	local template_code = pl_templates[selected_template] or pl_templates[next(pl_templates)]
+	local pl_templates = templates[pname]
+	if not pl_templates then
+		pname = next(templates)
+		pl_templates = templates[pname]
+	end
+
+	local template_code = pl_templates[selected_template]
+	if not template_code then
+		selected_template = next(pl_templates)
+		template_code = pl_templates[selected_template]
+	end
 
 	local spec = "size[10,10]"..
 
 	-- show available players, field player_name, current player name is the selected one
-		"dropdown[0,0;3;player_name;"..
+		"dropdown[0,0;5;player_name;"..
 		fill_formspec_dropdown_list(templates, pname)..
 
 	-- show templates of pname
-		"dropdown[3,0;3;template_name;"..
+		"dropdown[5,0;5;template_name;"..
 		fill_formspec_dropdown_list(pl_templates, selected_template)..
 
 	-- show selected template
-		"textarea[0,4;7,7;template_code;template code:;"..template_code.."]"..
+		"textarea[0,1;10.5,8.5;template_code;template code:;"..template_code.."]"..
 
-		"button[0,2;1,1;button;set]"..
+	-- save name
+		"field[5,9.5;5,0;save_name;savename;"..selected_template.."]"..
 
-		"button[1,2;1,1;button;add]"..
+		"button[0,10;2,0;button;set]"..
 
-		"button[2,2;1,1;button;save]"
+		"button[2,10;2,0;button;add]"..
+
+		"button[5,10;2,0;button;save]"
 
 	return spec
 end
@@ -272,7 +284,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		end
 		templates[pname][savename] = code
 		save()
-		minetest.chat_send_player(pname, "template "..pname.."/"..template_name.." saved")
+		minetest.chat_send_player(pname, "template "..pname.."/"..savename.." saved")
 		return
 	end
 end)
