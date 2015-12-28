@@ -2,10 +2,27 @@
 vector_extras there: https://github.com/HybridDog/vector_extras
 ]]
 
-local templates = {
-	singleplayer = {fir = "daw", mak = "delay()"},
-	MoreMesecons = {mag = "dawasd", mak = "delrq"},
-}
+local templates = {MoreMesecons = {
+	logic = [[-- AND
+port.a = pin.b and pin.c
+-- OR
+port.a = pin.b or pin.c
+-- NOT
+port.a = not pin.b
+-- NAND
+port.a = not (pin.b and pin.c)
+-- NOR
+port.a = not (pin.b or pin.c)
+-- XOR
+port.a = pin.b ~= pin.c
+-- XNOR / NXOR
+port.a = pin.b == pin.c]],
+	digilinesth = [[digiline_send(channel, msg)
+if event.type == "digiline" then
+	print(event.channel)
+	print(event.msg)
+end]],
+}}
 
 
 local file_path = minetest.get_worldpath().."/MoreMesecons_lctt"
@@ -55,9 +72,6 @@ minetest.register_on_shutdown(function()
 	end
 end)
 
-
--- test if it works
--- add savename textfield to formspec
 
 -- used for the dropdown formspec element
 local function fill_formspec_dropdown_list(t, selected)
@@ -147,20 +161,19 @@ minetest.register_tool("moremesecons_luacontroller_tool:lctt", {
 			return
 		end
 
+		local pname = player:get_player_name()
 		local pos = pt.under
 		if not is_luacontroller(pos) then
+			minetest.chat_send_player(pname, "You can use the luacontroller template tool only on luacontroller nodes.")
 			return
 		end
 
-		local pname = player:get_player_name()
 		pdata[pname] = pdata[pname] or {
 			pos = pos,
 			player_name = pname,
 			template_name = next(templates[pname]),
 		}
 		minetest.show_formspec(pname, "moremesecons:luacontroller_tool", get_selection_formspec(pdata[pname].player_name, pdata[pname].template_name))
-
-
 	end,
 })
 
