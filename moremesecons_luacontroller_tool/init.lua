@@ -81,7 +81,7 @@ local function fill_formspec_dropdown_list(t, selected)
 			txt = txt..","
 		end
 	end
-	return txt..";"..selected_id or 1 .."]"
+	return txt..";"..(selected_id or 1).."]"
 	--spec = string.sub(spec, 1, -2)
 end
 
@@ -99,7 +99,7 @@ local function get_selection_formspec(pname, selected_template)
 		fill_formspec_dropdown_list(templates, pname)..
 
 	-- show templates of pname
-		"dropdown[0,1;3;template_name;"..
+		"dropdown[3,0;3;template_name;"..
 		fill_formspec_dropdown_list(pl_templates, selected_template)..
 
 	-- show selected template
@@ -190,7 +190,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		return
 	end
 
-	minetest.chat_send_all(dump(fields))
+	--minetest.chat_send_all(dump(fields))
 
 	local pname = player:get_player_name()
 
