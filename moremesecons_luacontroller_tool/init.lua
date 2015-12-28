@@ -141,7 +141,7 @@ minetest.register_tool("moremesecons_luacontroller_tool:lctt", {
 	description = "luacontroller template tool",
 	inventory_image = "moremesecons_luacontroller_tool.png",
 
-	on_place = function(itemstack, player, pt)
+	on_use = function(_, player, pt)
 		if not player
 		or not pt then
 			return
