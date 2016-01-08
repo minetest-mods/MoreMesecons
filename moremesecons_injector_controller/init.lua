@@ -4,7 +4,6 @@ local injector_controller_get_output_rules = function(node)
 	for i = 0, node.param2 do
 		rules = mesecon.rotate_rules_left(rules)
 	end
-	table.foreach(rules, print)
 	return rules
 end
 
@@ -50,7 +49,6 @@ mesecon.register_node("moremesecons_injector_controller:injector_controller", {
 		fixed = {{-8/16, -8/16, -8/16, 8/16, -7/16, 8/16 }},
 	},
 	on_timer = on_timer,
-	on_construct = start_timer,
 },{
 	tiles = {"moremesecons_injector_controller_off.png", "moremesecons_injector_controller_side.png", "moremesecons_injector_controller_side.png"},
 	groups = {dig_immediate=2},
