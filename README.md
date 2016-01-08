@@ -2,7 +2,8 @@
 
 Based on Mesecons by Jeija  
 By @paly2  
-With the participation of @LeMagnesium (bugfix), @Ataron (textures), @JAPP (texture), and @HybridDog (many things).
+With the participation of @LeMagnesium (bugfix), @Ataron (textures), @JAPP (texture), and @HybridDog (many things, including the `Luacontroller Template Tool`).
+This mod is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License v3.0 as published by the Free Software Foundation. You should have received a copy of the GNU General Public License along with this mod.
 
 MoreMesecons is a mod for minetest wich adds some mesecons items.
 
@@ -16,7 +17,8 @@ MoreMesecons is a mod for minetest wich adds some mesecons items.
 * `Dual Delayer` : If it receives a mesecons signal, port 1 turns on immediatly and port 2 turns on 0.4 seconds later. At the end of the signal, port 2 turns off immediatly and port 1 turns off 0.4 secondes later. For example, this is useful for double extenders.
 * `Entity Detector` : You can use it to detect an entity. You can choose the entity to detect by right-click (use itemstring, for example "mobs:rat". To detect a dropped item, write "__builtin:item". To detect a specific dropped item, write its itemstring (for example "default:cobble")).
 * `Igniter` : This node is a lighter that ignites ajacent flammable nodes (including TNT).
-* `Injector Controller` : This node is usefull to activate/deactivate a pipeworks filter injector : it sends a blinky signal.
+* `Injector Controller` : This node is useful to activate/deactivate a pipeworks filter injector : it sends a blinky signal.
+* `Luacontroller Template Tool` : This tool is very useful to manipulate templates with luacontrollers. Just click with it on a luacontroller, then you'll see a formspec.
 * `Player Killer` : This block kills the nearest player (with a maximal distance of 8 blocks by default) (if this player isn't its owner) when it receives a mesecons signal.
 * `Sayer` : This node sends a message to every players inside a radius of 8 nodes.
 * `Signal Changer` : If it receives a signal on its pin "F", it turns on. If it receives a signal on its pin "O", it turns off. Note : an inverted signal is sended at the other end of the arrow.
