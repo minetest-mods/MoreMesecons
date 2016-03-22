@@ -73,9 +73,7 @@ minetest.register_node("moremesecons_teleporter:teleporter", {
 		action_on = teleport_nearest
 	}},
 	sounds = default.node_sound_stone_defaults(),
-	on_construct = function(pos)
-		register(pos)
-	end,
+	on_construct = register,
 	on_destruct = function(pos)
 		local RID = vector.get_data_from_pos(teleporters_rids, pos.z,pos.y,pos.x)
 		if RID then
@@ -86,12 +84,8 @@ minetest.register_node("moremesecons_teleporter:teleporter", {
 })
 
 
-minetest.register_abm({
+minetest.register_lbm({
+	name = "moremesecons_teleporter:add_teleporter",
 	nodenames = {"moremesecons_teleporter:teleporter"},
-	interval=5,
-	chance=1,
-	catch_up = false,
-	action = function(pos)
-		register(pos)
-	end
+	action = register
 })

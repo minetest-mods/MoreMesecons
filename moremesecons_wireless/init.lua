@@ -185,18 +185,14 @@ minetest.register_craft({
 	}
 })
 
-minetest.register_abm({
+minetest.register_lbm({
+	name = "moremesecons_wireless:add_jammer",
 	nodenames = {"moremesecons_wireless:jammer_on"},
-	interval = 5,
-	chance = 1,
-	catch_up = false,
 	action = add_jammer
 })
 
-minetest.register_abm({
+minetest.register_lbm({
+	name = "moremesecons_wireless:add_wireless",
 	nodenames = {"moremesecons_wireless:wireless"},
-	interval = 5,
-	chance = 1,
-	catch_up = false,
 	action = register_RID
 })
