@@ -86,7 +86,7 @@ minetest.register_node("moremesecons_adjustable_player_detector:player_detector_
 	paramtype = "light",
 	walkable = true,
 	groups = {cracky=3,not_in_creative_inventory=1},
-	drop = 'mesecons_detector:object_detector_off',
+	drop = 'moremesecons_adjustable_player_detector:player_detector_off',
 	mesecons = {receptor = {
 		state = mesecon.state.on,
 		rules = mesecon.rules.pplate

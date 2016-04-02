@@ -89,7 +89,7 @@ minetest.register_node("moremesecons_entity_detector:entity_detector_on", {
 	paramtype = "light",
 	walkable = true,
 	groups = {cracky=3,not_in_creative_inventory=1},
-	drop = 'mesecons_detector:object_detector_off',
+	drop = 'moremesecons_entity_detector:entity_detector_off',
 	mesecons = {receptor = {
 		state = mesecon.state.on,
 		rules = mesecon.rules.pplate
