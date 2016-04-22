@@ -14,29 +14,31 @@ local rotate_torch_rules = function (rules, param2)
 	end
 end
 
+local output_rules = {
+	{x = 1,  y = 0, z = 0},
+	{x = 0,  y = 0, z = 1},
+	{x = 0,  y = 0, z =-1},
+	{x = 0,  y = 1, z = 0},
+	{x = 0,  y =-1, z = 0}
+}
 local torch_get_output_rules = function(node)
-	local rules = {
-		{x = 1,  y = 0, z = 0},
-		{x = 0,  y = 0, z = 1},
-		{x = 0,  y = 0, z =-1},
-		{x = 0,  y = 1, z = 0},
-		{x = 0,  y =-1, z = 0}}
-
-	return rotate_torch_rules(rules, node.param2)
+	return rotate_torch_rules(output_rules, node.param2)
 end
 
+local input_rules = {
+	{x = -2, y = 0, z = 0},
+	{x = -1, y = 1, z = 0}
+}
 local torch_get_input_rules = function(node)
-	local rules = 	{{x = -2, y = 0, z = 0},
-				 {x = -1, y = 1, z = 0}}
-
-	return rotate_torch_rules(rules, node.param2)
+	return rotate_torch_rules(input_rules, node.param2)
 end
 
 minetest.register_craft({
 	output = "moremesecons_switchtorch:switchtorch_on 4",
 	recipe = {
-	{"default:stick"},
-	{"group:mesecon_conductor_craftable"},}
+		{"default:stick"},
+		{"group:mesecon_conductor_craftable"},
+	}
 })
 
 local torch_selectionbox =
@@ -64,8 +66,7 @@ minetest.register_node("moremesecons_switchtorch:switchtorch_off", {
 	}},
 
 	on_construct = function(pos)-- For EndPower
-   		local meta = minetest.get_meta(pos)
-   		meta:set_int("EndPower", 1) -- 1 for true, 0 for false
+		minetest.get_meta(pos):set_int("EndPower", 1) -- 1 for true, 0 for false
 	end
 })
 
@@ -93,26 +94,28 @@ minetest.register_abm({
 	action = function(pos, node)
 		local is_powered = false
 		for _, rule in ipairs(torch_get_input_rules(node)) do
-			local src = mesecon.addPosRule(pos, rule)
-			if mesecon.is_power_on(src) then
+			if mesecon.is_power_on(mesecon.addPosRule(pos, rule)) then
 				is_powered = true
+				break
 			end
 		end
 
 		local meta = minetest.get_meta(pos)
-		if is_powered and meta:get_int("EndPower") == 1 then
-			if node.name == "moremesecons_switchtorch:switchtorch_on" then
-				minetest.swap_node(pos, {name = "moremesecons_switchtorch:switchtorch_off", param2 = node.param2})
-				mesecon.receptor_off(pos, torch_get_output_rules(node))
-			elseif node.name == "moremesecons_switchtorch:switchtorch_off" then
-				minetest.swap_node(pos, {name = "moremesecons_switchtorch:switchtorch_on", param2 = node.param2})
-				mesecon.receptor_on(pos, torch_get_output_rules(node))
-			end
-			meta = minetest.get_meta(pos)
-			meta:set_int("EndPower", 0)
-		elseif not(is_powered) and meta:get_int("EndPower") == 0 then
-			meta:set_int("EndPower", 1)
+		if meta:get_int("EndPower") == 0 == is_powered then
+			return
 		end
+		if not is_powered then
+			meta:set_int("EndPower", 1)
+			return
+		end
+		if node.name == "moremesecons_switchtorch:switchtorch_on" then
+			minetest.swap_node(pos, {name = "moremesecons_switchtorch:switchtorch_off", param2 = node.param2})
+			mesecon.receptor_off(pos, torch_get_output_rules(node))
+		elseif node.name == "moremesecons_switchtorch:switchtorch_off" then
+			minetest.swap_node(pos, {name = "moremesecons_switchtorch:switchtorch_on", param2 = node.param2})
+			mesecon.receptor_on(pos, torch_get_output_rules(node))
+		end
+		meta:set_int("EndPower", 0)
 	end
 })
 
