@@ -134,6 +134,7 @@ mesecon.register_node("moremesecons_wireless:jammer", {
 	},
 	groups = {dig_immediate=2},
 	mesecons = {effector = {
+		rules = mesecon.rules.flat,
 		action_on = function(pos)
 			add_jammer(pos)
 			minetest.swap_node(pos, {name="moremesecons_wireless:jammer_on"})
@@ -160,6 +161,7 @@ mesecon.register_node("moremesecons_wireless:jammer", {
 	},
 	groups = {dig_immediate=2, not_in_creative_inventory=1},
 	mesecons = {effector = {
+		rules = mesecon.rules.flat,
 		action_off = function(pos)
 			remove_jammer(pos)
 			minetest.swap_node(pos, {name="moremesecons_wireless:jammer_off"})
