@@ -126,5 +126,6 @@ minetest.register_craft({
 minetest.register_lbm({
 	name = "moremesecons_jammer:add_jammer",
 	nodenames = {"moremesecons_jammer:jammer_on"},
+	run_at_every_load = true,
 	action = add_jammer
 })

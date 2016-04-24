@@ -87,5 +87,6 @@ minetest.register_node("moremesecons_teleporter:teleporter", {
 minetest.register_lbm({
 	name = "moremesecons_teleporter:add_teleporter",
 	nodenames = {"moremesecons_teleporter:teleporter"},
+	run_at_every_load = true,
 	action = register
 })
