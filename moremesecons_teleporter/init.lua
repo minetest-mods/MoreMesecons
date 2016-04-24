@@ -83,9 +83,18 @@ minetest.register_node("moremesecons_teleporter:teleporter", {
 	end,
 })
 
-
+--[[
 minetest.register_lbm({
 	name = "moremesecons_teleporter:add_teleporter",
 	nodenames = {"moremesecons_teleporter:teleporter"},
+	action = register
+})
+]]
+
+minetest.register_abm({
+	nodenames = {"moremesecons_teleporter:teleporter"},
+	interval=5,
+	chance=1,
+	catch_up = false,
 	action = register
 })
