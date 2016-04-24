@@ -123,18 +123,8 @@ minetest.register_craft({
 		{"", "moremesecons_wireless:jammer_off", ""}}
 })
 
---[[
 minetest.register_lbm({
 	name = "moremesecons_jammer:add_jammer",
 	nodenames = {"moremesecons_jammer:jammer_on"},
-	action = add_jammer
-})
-]]
-
-minetest.register_abm({
-	nodenames = {"moremesecons_jammer:jammer_on"},
-	interval = 5,
-	chance = 1,
-	catch_up = false,
 	action = add_jammer
 })
