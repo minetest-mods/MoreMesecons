@@ -1,14 +1,16 @@
 # MoreMesecons
 
 Based on Mesecons by Jeija  
-By @paly2  
-With the participation of @LeMagnesium (bugfix), @Ataron (textures), @JAPP (texture), and @HybridDog (many things, including the `Luacontroller Template Tool`).  
+By @paly2 and @HybridDog  
+With the participation of @LeMagnesium (bugfix), @Ataron (textures), @JAPP (texture).  
+
+Dependencies: [Mesecons](https://github.com/Jeija/minetest-mod-mesecons/), [vector_extras](https://github.com/HybridDog/vector_extras/), [digilines](https://github.com/minetest-mods/digilines) (optionnal).
 
 This mod is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License v3.0 as published by the Free Software Foundation. You should have received a copy of the GNU General Public License along with this mod.
 
 MoreMesecons is a mod for minetest wich adds some mesecons items.
 
-![Screenshot](https://crush.daxbau.net/download/XcGejYXNTbdm.png)
+[Here](http://github.com/minetest-mods/MoreMesecons/wiki)'s the wiki !
 
 ### New items
 
@@ -28,5 +30,5 @@ MoreMesecons is a mod for minetest wich adds some mesecons items.
 * `Switch Torch` : It connects just like Mesecons Torch. If it receives a signal, it turns on, and if it receives a second signal, it turns off.
 * `Teleporter` : If you place one teleporter, if it receives a mesecons, it teleports the nearest player on itself. If you place two teleporters on the same axis, if one receives a mesecons signal, it teleports the nearest player on the second (with a maximal distance of 50 nodes by default). The player teleporter must be inside a radius of 25 nodes.
 * `Temporary Gate` : If it receives a mesecons signal, whatever its duration, a mesecons signal is send with a fixed duration. You can change it by right-click (in seconds) (you can write for example 0.2 to send a pulse, or 20 to send long signals).
-* `Wireless` : Place 2 (or more) wireless somewhere. Change their channel by right-click. If you send a signal to a wireless, every wireless wich have the same channel will send the signal.
+* `Wireless` : Place 2 (or more) wireless somewhere. Change their channel by right-click. If you send a signal to a wireless, every wireless wich have the same channel will send the signal. Compatible with digiline mod.
 * `Wireless Jammer` : If it receives a mesecons signal, it deactivates all wireless (receptors) in a radius of 15 nodes.
