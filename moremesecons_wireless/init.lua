@@ -46,6 +46,19 @@ local function wireless_deactivate(pos)
 	end
 end
 
+local function on_digiline_receive(pos, node, channel, msg)
+	local setchan = minetest.get_meta(pos):get_string("channel") -- Note : the digiline channel is the same as the wireless channel. TODO: Making two different channels and a more complex formspec ?
+	if channel ~= setchan or is_jammed(pos) then
+		return
+	end
+	for i = 1, #wireless do
+		if not vector.equals(wireless[i], pos)
+		and minetest.get_meta(wireless[i]):get_string("channel") == channel then
+			digiline:receptor_send(wireless[i], digiline.rules.default, channel, msg)
+		end
+	end
+end
+
 minetest.register_node("moremesecons_wireless:wireless", {
 	tiles = {"moremesecons_wireless.png"},
 	paramtype = "light",
@@ -57,6 +70,12 @@ minetest.register_node("moremesecons_wireless:wireless", {
 		action_on = wireless_activate,
 		action_off = wireless_deactivate
 	}},
+	digiline = {
+		receptor = {},
+		effector = {
+			action = on_digiline_receive
+		},
+	},
 	sounds = default.node_sound_stone_defaults(),
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)
