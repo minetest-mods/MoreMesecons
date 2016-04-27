@@ -24,12 +24,12 @@ local function wireless_activate(pos)
 		-- jamming doesn't disallow receiving signals, only sending them
 		return
 	end
-	
+
 	local channel_first_wireless = minetest.get_meta(pos):get_string("channel")
 	if channel_first_wireless == "" then
 		return
 	end
-	
+
 	for i = 1, #wireless do
 		if not vector.equals(wireless[i], pos)
 		and minetest.get_meta(wireless[i]):get_string("channel") == channel_first_wireless then
@@ -83,9 +83,8 @@ minetest.register_node("moremesecons_wireless:wireless", {
 	},
 	sounds = default.node_sound_stone_defaults(),
 	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
-   		meta:set_string("formspec", "field[channel;channel;${channel}]")
-   		register_RID(pos)
+		minetest.get_meta(pos):set_string("formspec", "field[channel;channel;${channel}]")
+		register_RID(pos)
 	end,
 	on_destruct = function(pos)
 		local RID = get(wireless_rids, pos.z,pos.y,pos.x)
@@ -95,9 +94,11 @@ minetest.register_node("moremesecons_wireless:wireless", {
 		end
 		mesecon.receptor_off(pos)
 	end,
-	on_receive_fields = function(pos, formname, fields, sender)
-		local meta = minetest.get_meta(pos)
-		meta:set_string("channel", fields.channel)
+	on_receive_fields = function(pos, _, fields, player)
+		if fields.channel
+		and not minetest.is_protected(pos, player:get_player_name()) then
+			minetest.get_meta(pos):set_string("channel", fields.channel)
+		end
 	end,
 })
 

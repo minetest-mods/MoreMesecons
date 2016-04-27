@@ -37,13 +37,14 @@ local function after_place(pos, placer)
 	end
 end
 
-local function receive_fields(pos, formname, fields, sender)
+local function receive_fields(pos, _, fields, player)
 	if not fields.submit then
 		return
 	end
 	local meta = minetest.get_meta(pos)
 	local owner = meta:get_string("owner")
-	if owner ~= "" and sender:get_player_name() ~= owner then
+	if owner ~= ""
+	and player:get_player_name() ~= owner then
 		return
 	end
 	meta:set_string("commands", fields.commands)

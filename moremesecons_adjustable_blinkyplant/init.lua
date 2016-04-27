@@ -1,16 +1,15 @@
 local toggle_timer = function (pos, restart)
 	local timer = minetest.get_node_timer(pos)
-	local meta = minetest.get_meta(pos)
-	if timer:is_started() and not restart then
+	if timer:is_started()
+	and not restart then
 		timer:stop()
 	else
-		timer:start(tonumber(meta:get_int("interval")))
+		timer:start(tonumber(minetest.get_meta(pos):get_string("interval")) or 0)
 	end
 end
 
-local on_timer = function (pos)
-	local node = minetest.get_node(pos)
-	if(mesecon.flipstate(pos, node) == "on") then
+local on_timer = function(pos)
+	if mesecon.flipstate(pos, minetest.get_node(pos)) == "on" then
 		mesecon.receptor_on(pos)
 	else
 		mesecon.receptor_off(pos)
@@ -31,14 +30,16 @@ mesecon.register_node("moremesecons_adjustable_blinkyplant:adjustable_blinky_pla
 	},
 	on_timer = on_timer,
 	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
-   		meta:set_string("formspec", "field[interval;interval;${interval}]")
-   		toggle_timer(pos, true)
-	end,
-	on_receive_fields = function(pos, formname, fields, sender)
-		local meta = minetest.get_meta(pos)
-		meta:set_string("interval", fields.interval)
+		minetest.get_meta(pos):set_string("formspec", "field[interval;interval;${interval}]")
 		toggle_timer(pos, true)
+	end,
+	on_receive_fields = function(pos, _, fields, player)
+		local interval = tonumber(fields.interval)
+		if interval
+		and not minetest.is_protected(pos, player:get_player_name()) then
+			minetest.get_meta(pos):set_string("interval", interval)
+			toggle_timer(pos, true)
+		end
 	end,
 },{
 	tiles = {"moremesecons_blinky_plant_off.png"},

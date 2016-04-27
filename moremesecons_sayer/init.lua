@@ -75,10 +75,11 @@ minetest.register_node("moremesecons_sayer:sayer", {
 	},
 	groups = {dig_immediate = 2},
 	on_construct = function(pos)
-   		minetest.get_meta(pos):set_string("formspec", "field[text;text;${text}]")
+		minetest.get_meta(pos):set_string("formspec", "field[text;text;${text}]")
 	end,
-	on_receive_fields = function(pos, _, fields)
-		if fields.text then
+	on_receive_fields = function(pos, _, fields, player)
+		if fields.text
+		and not minetest.is_protected(pos, player:get_player_name()) then
 			minetest.get_meta(pos):set_string("text", fields.text)
 		end
 	end,

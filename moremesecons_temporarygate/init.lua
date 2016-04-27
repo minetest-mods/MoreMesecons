@@ -64,10 +64,11 @@ mesecon.register_node("moremesecons_temporarygate:temporarygate", {
 	is_ground_content = true,
 	sounds = default.node_sound_stone_defaults(),
 	on_construct = function(pos)
-   		minetest.get_meta(pos):set_string("formspec", "field[time;time;${time}]")
+		minetest.get_meta(pos):set_string("formspec", "field[time;time;${time}]")
 	end,
-	on_receive_fields = function(pos, formname, fields, sender)
-		if fields.time then
+	on_receive_fields = function(pos, _, fields, player)
+		if fields.time
+		and not minetest.is_protected(pos, player:get_player_name()) then
 			minetest.get_meta(pos):set_string("time", fields.time)
 		end
 	end

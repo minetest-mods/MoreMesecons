@@ -14,9 +14,10 @@ local function object_detector_make_formspec(pos)
 	make_formspec(minetest.get_meta(pos))
 end
 
-local function object_detector_on_receive_fields(pos, formname, fields)
+local function object_detector_on_receive_fields(pos, _, fields, player)
 	if not fields.scanname
-	or not fields.digiline_channel then
+	or not fields.digiline_channel
+	or minetest.is_protected(pos, player:get_player_name()) then
 		return
 	end
 
