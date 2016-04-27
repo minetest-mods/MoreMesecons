@@ -24,7 +24,12 @@ local function wireless_activate(pos)
 		-- jamming doesn't disallow receiving signals, only sending them
 		return
 	end
+	
 	local channel_first_wireless = minetest.get_meta(pos):get_string("channel")
+	if channel_first_wireless == "" then
+		return
+	end
+	
 	for i = 1, #wireless do
 		if not vector.equals(wireless[i], pos)
 		and minetest.get_meta(wireless[i]):get_string("channel") == channel_first_wireless then
@@ -48,7 +53,7 @@ end
 
 local function on_digiline_receive(pos, node, channel, msg)
 	local setchan = minetest.get_meta(pos):get_string("channel") -- Note : the digiline channel is the same as the wireless channel. TODO: Making two different channels and a more complex formspec ?
-	if channel ~= setchan or is_jammed(pos) then
+	if channel ~= setchan or is_jammed(pos) or setchan == "" then
 		return
 	end
 	for i = 1, #wireless do
