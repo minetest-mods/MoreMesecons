@@ -46,8 +46,9 @@ mesecon.register_node("moremesecons_adjustable_blinkyplant:adjustable_blinky_pla
 	groups = {dig_immediate=3},
 	mesecons = {receptor = { state = mesecon.state.off }}
 },{
-	tiles = {"moremesecons_blinky_plant_on.png"},
+	tiles = {"moremesecons_blinky_plant_off.png^moremesecons_blinky_plant_on.png"},
 	groups = {dig_immediate=3, not_in_creative_inventory=1},
+	sunlight_propagates = true,
 	mesecons = {receptor = { state = mesecon.state.on }},
 })
 
