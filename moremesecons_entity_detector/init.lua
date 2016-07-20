@@ -104,8 +104,8 @@ minetest.register_node("moremesecons_entity_detector:entity_detector_on", {
 minetest.register_craft({
 	output = 'moremesecons_entity_detector:entity_detector_off',
 	recipe = {
-		{"mesecons_detector:object_detector_off"},
-		{"default:mese_crystal_fragment"}
+		{"default:mese_crystal_fragment"},
+		{"mesecons_detector:object_detector_off"}
 	}
 })
 
