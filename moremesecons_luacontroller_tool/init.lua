@@ -142,6 +142,9 @@ end
 
 -- tests if the node is a luacontroller
 local function is_luacontroller(pos)
+	if not pos then
+		return false
+	end
 	return string.match(minetest.get_node(pos).name, "mesecons_luacontroller:luacontroller%d%d%d%d")
 end
 
