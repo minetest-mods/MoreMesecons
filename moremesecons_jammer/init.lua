@@ -101,6 +101,7 @@ mesecon.register_node("moremesecons_jammer:jammer", {
 	mesecons = {effector = {
 		action_on = function(pos)
 			add_jammer(pos)
+			minetest.sound_play("moremesecons_jammer", {pos = pos})
 			minetest.swap_node(pos, {name="moremesecons_jammer:jammer_on"})
 		end
 	}},
