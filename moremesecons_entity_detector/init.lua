@@ -4,7 +4,7 @@
 
 local function make_formspec(meta)
 	meta:set_string("formspec", "size[9,5]" ..
-		"field[0.3,  0;9,2;scanname;Name (itemstring) of entity to scan for (empty for any):;${scanname}]"..
+		"field[0.3,  0;9,2;scanname;Coma-separated list of the names (itemstring) of entities to scan for (empty for any):;${scanname}]"..
 		"field[0.3,1.5;4,2;digiline_channel;Digiline Channel (optional):;${digiline_channel}]"..
 		"field[0.3,3;2,2;radius;Detection radius:;${radius}]"..
 		"button_exit[3.5,3.5;2,3;;Save]")
@@ -35,6 +35,7 @@ local object_detector_scan = function (pos)
 	local meta = minetest.get_meta(pos)
 	local scanname = meta:get_string("scanname")
 	local scan_all = scanname == ""
+	local scan_names = scanname:split(',')
 	local radius = meta:get_int("radius")
 	if radius == 0 then
 		radius = 6
@@ -43,9 +44,15 @@ local object_detector_scan = function (pos)
 		if not obj:is_player() then
 			local luaentity = obj:get_luaentity()
 			local isname = luaentity.name
-			if isname
-			and (scan_all or isname == scanname or (isname == "__builtin:item" and luaentity.itemstring == scanname)) then -- entity with scanname found or not scanname specified
-				return true
+			if isname then
+				if scan_all then
+					return true
+				end
+				for _, name in ipairs(scan_names) do
+					if isname == name or (isname == "__builtin:item" and luaentity.itemstring == name) then
+						return true
+					end
+				end
 			end
 		end
 	end
