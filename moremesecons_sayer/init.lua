@@ -1,10 +1,29 @@
 local MAX_DISTANCE = 8
 local use_speech_dispatcher = true
 
+local popen, execute = io.popen, os.execute
+if use_speech_dispatcher then
+	if not minetest.is_singleplayer() then
+		minetest.log("warning", "[moremesecons_sayer] use_speech_dispatcher = true, but the speech dispatcher can only be used in singleplayer")
+		use_speech_dispatcher = false
+	else
+		local ie = {}
+		if minetest.request_insecure_environment then
+			ie = minetest.request_insecure_environment()
+		end
+		if not ie then
+			minetest.log("warning", "[moremesecons_sayer] This mod needs access to insecure functions in order to use the speech dispatcher. Please add the moremesecons_sayer mod to your secure.trusted_mods settings or disable the speech dispatcher.")
+			use_speech_dispatcher = false
+		else
+			popen = ie.io.popen
+			execute = ie.os.execute
+		end
+	end
+end
+
 local sayer_activate
 if use_speech_dispatcher
-and minetest.is_singleplayer() -- must! executing commands with it and crashes may be possible
-and io.popen("if hash spd-say 2>/dev/null; then printf yes; fi"):read("*all") == "yes" then
+and popen("if hash spd-say 2>/dev/null; then printf yes; fi"):read("*all") == "yes" then
 	minetest.log("info", "[moremesecons_sayer] using speech dispatcher")
 	local tab = {
 		"spd-say",
@@ -46,7 +65,7 @@ and io.popen("if hash spd-say 2>/dev/null; then printf yes; fi"):read("*all") ==
 		else
 			tab[4] = "-i "..volume
 		end
-		os.execute(table.concat(tab, " "))
+		execute(table.concat(tab, " "))
 	end
 else
 	function sayer_activate(pos)
