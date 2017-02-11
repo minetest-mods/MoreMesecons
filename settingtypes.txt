@@ -5,19 +5,19 @@
 moremesecons_commandblock.authorized_commands (Authorized commands) string tell
 
 # Maximum distance of the @nearest player
-# Any value less than or equal to 0 will be set to 1
+# Any value less than or equal to 0 will be changed to 1 and a NaN value will be changed to the default value
 moremesecons_commandblock.nearest_max_distance (Nearest player maximum distance) float 8
 
 [Signal Jammer]
 
 # Jammer action range
-# Any value less than or equal to 0 will be set to 1
+# Any value less than or equal to 0 will be changed to 1 and a NaN value will be changed to the default value
 moremesecons_jammer.max_distance (Jammer action range) float 10
 
 [Player Killer]
 
 # Player Killer action range
-# Any value less than or equal to 0 will be set to 1
+# Any value less than or equal to 0 will be changed to 1 and a NaN value will be changed to the default value
 moremesecons_playerkiller.max_distance (Player Killer action range) float 8
 
 [Sayer]
@@ -31,13 +31,13 @@ moremesecons_playerkiller.max_distance (Player Killer action range) float 8
 moremesecons_sayer.use_speech_dispatcher (Use the Speech Dispatcher) bool true
 
 # Sayer range
-# Any value less than or equal to 0 will be set to 1
+# Any value less than or equal to 0 will be changed to 1 and a NaN value will be changed to the default value
 moremesecons_sayer.max_distance (Range) float 8
 
 [Teleporter]
 
 # Maximum Teleporter To Teleporter distance
-# Any value less than or equal to 0 will be set to 1
+# Any value less than or equal to 0 will be changed to 1 and a NaN value will be changed to the default value
 moremesecons_teleporter.max_t2t_distance (Maximum Teleporter To Teleporter distance) float 50
 
 # Maximum Player To Teleporter distance
@@ -47,5 +47,5 @@ moremesecons_teleporter.max_p2t_distance (Maximum Player To Teleporter distance)
 [Wireless]
 
 # Wireless Jammer action range
-# Any value less than or equal to 0 will be set to 1
+# Any value less than or equal to 0 will be changed to 1 and a NaN value will be changed to the default value
 moremesecons_wireless.jammer_max_distance (Wireless Jammer action range) float 15

@@ -44,9 +44,11 @@ if use_speech_dispatcher then
 	end
 
 	function sayer_activate(pos)
-		local MAX_DISTANCE = minetest.setting_get("moremesecons_sayer.max_distance") or 8
+		local MAX_DISTANCE = tonumber(minetest.setting_get("moremesecons_sayer.max_distance")) or 8
 		if MAX_DISTANCE <= 0 then
 			MAX_DISTANCE = 1
+		elseif MAX_DISTANCE ~= MAX_DISTANCE then -- NaN
+			MAX_DISTANCE = 8
 		end
 		MAX_DISTANCE = MAX_DISTANCE^2
 
@@ -83,9 +85,11 @@ if use_speech_dispatcher then
 	end
 else
 	function sayer_activate(pos)
-		local MAX_DISTANCE = minetest.setting_get("moremesecons_sayer.max_distance") or 8
+		local MAX_DISTANCE = tonumber(minetest.setting_get("moremesecons_sayer.max_distance")) or 8
 		if MAX_DISTANCE <= 0 then
 			MAX_DISTANCE = 1
+		elseif MAX_DISTANCE ~= MAX_DISTANCE then -- NaN
+			MAX_DISTANCE = 8
 		end
 
 		local tab = {
