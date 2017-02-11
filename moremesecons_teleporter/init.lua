@@ -10,8 +10,14 @@ local register = function(pos)
 end
 
 local teleport_nearest = function(pos)
-	local MAX_TELEPORTATION_DISTANCE = 50
-	local MAX_PLAYER_DISTANCE = 25
+	local MAX_TELEPORTATION_DISTANCE = tonumber(minetest.setting_get("moremesecons_teleporter.max_t2t_distance")) or 50
+	if MAX_TELEPORTATION_DISTANCE <= 0 then
+		MAX_TELEPORTATION_DISTANCE = 1
+	end
+	local MAX_PLAYER_DISTANCE = tonumber(minetest.setting_get("moremesecons_teleporter.max_p2t_distance")) or 25
+	if MAX_PLAYER_DISTANCE <= 0 then
+		MAX_PLAYER_DISTANCE = 1
+	end
 
 	-- Search the nearest player
 	local nearest = nil

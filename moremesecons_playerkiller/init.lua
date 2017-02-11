@@ -1,5 +1,8 @@
 local kill_nearest_player = function(pos)
-	local MAX_DISTANCE = 8 -- Use this number to set maximal distance to kill
+	local MAX_DISTANCE = tonumber(minetest.setting_get("moremesecons_playerkiller.max_distance")) or 8 -- Use this number to set maximal distance to kill
+	if MAX_DISTANCE <= 0 then
+		MAX_DISTANCE = 8
+	end
 
 	-- Search the nearest player
 	local nearest
@@ -22,7 +25,7 @@ local kill_nearest_player = function(pos)
 		-- maybe some mod placed it
 		return
 	end
-	
+
 	if owner == nearest:get_player_name() then
 		-- don't kill the owner !
 		return

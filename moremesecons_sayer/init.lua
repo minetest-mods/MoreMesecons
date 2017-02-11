@@ -1,5 +1,7 @@
-local MAX_DISTANCE = 8
-local use_speech_dispatcher = true
+local use_speech_dispatcher = minetest.setting_getbool("moremesecons_sayer.use_speech_dispatcher")
+if use_speech_dispatcher == nil then
+	use_speech_dispatcher = true
+end
 
 local popen, execute = io.popen, os.execute
 if use_speech_dispatcher then
@@ -34,8 +36,14 @@ and popen("if hash spd-say 2>/dev/null; then printf yes; fi"):read("*all") == "y
 	if language ~= "en" then
 		tab[3] = "-l "..language
 	end
-	MAX_DISTANCE = MAX_DISTANCE^2
+
 	function sayer_activate(pos)
+		local MAX_DISTANCE = minetest.setting_get("moremesecons_sayer.max_distance") or 8
+		if MAX_DISTANCE <= 0 then
+			MAX_DISTANCE = 1
+		end
+		MAX_DISTANCE = MAX_DISTANCE^2
+
 		local text = minetest.get_meta(pos):get_string("text")
 		if text == "" then
 			-- nothing to say
@@ -69,6 +77,11 @@ and popen("if hash spd-say 2>/dev/null; then printf yes; fi"):read("*all") == "y
 	end
 else
 	function sayer_activate(pos)
+		local MAX_DISTANCE = minetest.setting_get("moremesecons_sayer.max_distance") or 8
+		if MAX_DISTANCE <= 0 then
+			MAX_DISTANCE = 1
+		end
+
 		local tab = {
 			"Sayer at pos",
 			nil,

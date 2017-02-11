@@ -1,7 +1,9 @@
-local accepted_commands = {"tell"} -- Authorized commands. Any to accept all.
-local NEAREST_MAX_DISTANCE = 8
-
 local function initialize_data(meta)
+	local NEAREST_MAX_DISTANCE = tonumber(minetest.setting_get("moremesecons_commandblock.nearest_max_distance")) or 8
+	if NEAREST_MAX_DISTANCE <= 0 then
+		NEAREST_MAX_DISTANCE = 1
+	end
+
 	local commands = meta:get_string("commands")
 	meta:set_string("formspec",
 		"invsize[9,5;]" ..
@@ -68,6 +70,23 @@ local function resolve_commands(commands, pos)
 end
 
 local function commandblock_action_on(pos, node)
+	local NEAREST_MAX_DISTANCE = tonumber(minetest.setting_get("moremesecons_commandblock.nearest_max_distance")) or 8
+	if NEAREST_MAX_DISTANCE <= 0 then
+		NEAREST_MAX_DISTANCE = 1
+	end
+
+	local accepted_commands = {}
+	do
+		local commands_str = minetest.setting_get("moremesecons_commandblock.authorized_commands")
+		if commands_str then
+			for command in string.gmatch(commands_str, "([^ ]+)") do
+				accepted_commands[command] = true
+			end
+		else
+			accepted_commands = {tell = true}
+		end
+	end
+
 	if node.name ~= "moremesecons_commandblock:commandblock_off" then
 		return
 	end
@@ -93,14 +112,7 @@ local function commandblock_action_on(pos, node)
 			param = command:sub(pos + 1)
 		end
 		local cmddef = minetest.chatcommands[cmd]
-		local is_an_authorized_command = false
-		for i = 1, #accepted_commands do
-			if cmd == accepted_commands[i] then
-				is_an_authorized_command = true
-				break
-			end
-		end
-		if not is_an_authorized_command and #accepted_commands ~= 0 then
+		if not accepted_commands[cmd] and next(accepted_commands) then
 			minetest.chat_send_player(owner, "You can not execute the command "..cmd.." with a craftable command block ! This event will be reported.")
 			minetest.log("action", "Player "..owner.." tryed to execute an unauthorized command with a craftable command block.")
 			return

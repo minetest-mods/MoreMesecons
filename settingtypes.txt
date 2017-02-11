@@ -1,0 +1,51 @@
+[Craftable Commandblock]
+
+# Space-separated list of authorized commands
+# Empty to authorize all
+moremesecons_commandblock.authorized_commands (Authorized commands) string tell
+
+# Maximum distance of the @nearest player
+# Any value less than or equal to 0 will be set to 1
+moremesecons_commandblock.nearest_max_distance (Nearest player maximum distance) float 8
+
+[Signal Jammer]
+
+# Jammer action range
+# Any value less than or equal to 0 will be set to 1
+moremesecons_jammer.max_distance (Jammer action range) float 10
+
+[Player Killer]
+
+# Player Killer action range
+# Any value less than or equal to 0 will be set to 1
+moremesecons_playerkiller.max_distance (Player Killer action range) float 8
+
+[Sayer]
+
+# Whether to use the Speech Dispatcher
+# It will work only if:
+# * moremesecons_sayer is present in your trusted_mods setting
+# * you are playing in singleplayer
+# * the speech-dispatcher is installed on your system
+# * you are using a POSIX-compliant system and a sh-compatible shell (such as bash, dash, zsh...)
+moremesecons_sayer.use_speech_dispatcher (Use the Speech Dispatcher) bool true
+
+# Sayer range
+# Any value less than or equal to 0 will be set to 1
+moremesecons_sayer.max_distance (Range) float 8
+
+[Teleporter]
+
+# Maximum Teleporter To Teleporter distance
+# Any value less than or equal to 0 will be set to 1
+moremesecons_teleporter.max_t2t_distance (Maximum Teleporter To Teleporter distance) float 50
+
+# Maximum Player To Teleporter distance
+# Any value less than or equal to 0 will be set to 1
+moremesecons_teleporter.max_p2t_distance (Maximum Player To Teleporter distance) float 25
+
+[Wireless]
+
+# Wireless Jammer action range
+# Any value less than or equal to 0 will be set to 1
+moremesecons_wireless.jammer_max_distance (Wireless Jammer action range) float 15

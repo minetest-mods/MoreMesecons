@@ -1,5 +1,3 @@
-local JAMMER_MAX_DISTANCE = 10
-
 -- see wireless jammer
 local get = vector.get_data_from_pos
 local set = vector.set_data_to_pos
@@ -18,6 +16,11 @@ local function remove_jammer(pos)
 end
 
 local function is_jammed(pos)
+	local JAMMER_MAX_DISTANCE = tonumber(minetest.setting_get(moresecons_jammer.max_distance)) or 10
+	if JAMMER_MAX_DISTANCE <= 0 then
+		JAMMER_MAX_DISTANCE = 1
+	end
+
 	local pz,py,px = vector.unpack(pos)
 	for z,yxs in pairs(jammers) do
 		if math.abs(pz-z) <= JAMMER_MAX_DISTANCE then

@@ -1,5 +1,3 @@
-local JAMMER_MAX_DISTANCE = 15
-
 local wireless = {}
 local wireless_rids = {}
 
@@ -116,6 +114,11 @@ end
 
 -- looks big, but should work fast
 function is_jammed(pos)
+	local JAMMER_MAX_DISTANCE = tonumber(minetest.setting_get("moremesecons_wireless.jammer_max_distance")) or 15
+	if JAMMER_MAX_DISTANCE <= 0 then
+		JAMMER_MAX_DISTANCE = 1
+	end
+
 	local pz,py,px = vector.unpack(pos)
 	for z,yxs in pairs(jammers) do
 		if math.abs(pz-z) <= JAMMER_MAX_DISTANCE then
