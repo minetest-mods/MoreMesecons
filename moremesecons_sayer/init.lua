@@ -21,11 +21,17 @@ if use_speech_dispatcher then
 			execute = ie.os.execute
 		end
 	end
+
+	if use_speech_dispatcher then
+		if popen("if hash spd-say 2>/dev/null; then printf yes; fi"):read("*all") ~= "yes" then
+			minetest.log("warning", "[moremesecons_sayer] use_speech_dispatcher = true, but it seems the speech dispatcher isn't installed on your system")
+			use_speech_dispatcher = false
+		end
+	end
 end
 
 local sayer_activate
-if use_speech_dispatcher
-and popen("if hash spd-say 2>/dev/null; then printf yes; fi"):read("*all") == "yes" then
+if use_speech_dispatcher then
 	minetest.log("info", "[moremesecons_sayer] using speech dispatcher")
 	local tab = {
 		"spd-say",
