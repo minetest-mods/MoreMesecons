@@ -1,5 +1,17 @@
-local wireless = {}
-local wireless_rids = {}
+local wireless
+local wireless_rids
+local jammers
+
+local storage = minetest.get_mod_storage()
+wireless = minetest.deserialize(storage:get_string("wireless")) or {}
+wireless_rids = minetest.deserialize(storage:get_string("wireless_rids")) or {}
+jammers = minetest.deserialize(storage:get_string("jammers")) or {}
+
+local function update_mod_storage()
+	storage:set_string("wireless", minetest.serialize(wireless))
+	storage:set_string("wireless_rids", minetest.serialize(wireless_rids))
+	storage:set_string("jammers", minetest.serialize(jammers))
+end
 
 -- localize these functions with small names because they work fairly fast
 local get = vector.get_data_from_pos
@@ -14,6 +26,7 @@ local function register_RID(pos)
 	local RID = #wireless+1
 	wireless[RID] = pos
 	set(wireless_rids, pos.z,pos.y,pos.x, RID)
+	update_mod_storage()
 end
 
 local is_jammed
@@ -88,7 +101,8 @@ minetest.register_node("moremesecons_wireless:wireless", {
 		local RID = get(wireless_rids, pos.z,pos.y,pos.x)
 		if RID then
 			table.remove(wireless, RID)
-			vector.remove_data_from_pos(wireless_rids, pos.z,pos.y,pos.x)
+			remove(wireless_rids, pos.z,pos.y,pos.x)
+			update_mod_storage()
 		end
 		mesecon.receptor_off(pos)
 	end,
@@ -106,10 +120,12 @@ local function add_jammer(pos)
 		return
 	end
 	set(jammers, pos.z,pos.y,pos.x, true)
+	update_mod_storage()
 end
 
 local function remove_jammer(pos)
 	remove(jammers, pos.z,pos.y,pos.x)
+	update_mod_storage()
 end
 
 -- looks big, but should work fast
@@ -215,18 +231,4 @@ minetest.register_craft({
 		{"", "mesecons_torch:mesecon_torch_on", ""},
 		{"group:mesecon_conductor_craftable", "", "group:mesecon_conductor_craftable"},
 	}
-})
-
-minetest.register_lbm({
-	name = "moremesecons_wireless:add_jammer",
-	nodenames = {"moremesecons_wireless:jammer_on"},
-	run_at_every_load = true,
-	action = add_jammer
-})
-
-minetest.register_lbm({
-	name = "moremesecons_wireless:add_wireless",
-	nodenames = {"moremesecons_wireless:wireless"},
-	run_at_every_load = true,
-	action = register_RID
 })

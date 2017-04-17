@@ -1,15 +1,26 @@
-local teleporters = {}
-local teleporters_rids = {}
+local teleporters
+local teleporters_rids
+
+local storage = minetest.get_mod_storage()
+teleporters = minetest.deserialize(storage:get_string("teleporters")) or {}
+teleporters_rids = minetest.deserialize(storage:get_string("teleporters_rids")) or {}
+jammers = minetest.deserialize(storage:get_string("jammers")) or {}
+
+local function update_mod_storage()
+	storage:set_string("teleporters", minetest.serialize(teleporters))
+	storage:set_string("teleporters_rids", minetest.serialize(teleporters_rids))
+end
 
 
-local register = function(pos)
+local function register(pos)
 	if not vector.get_data_from_pos(teleporters_rids, pos.z,pos.y,pos.x) then
 		table.insert(teleporters, pos)
 		vector.set_data_to_pos(teleporters_rids, pos.z,pos.y,pos.x, #teleporters)
+		update_mod_storage()
 	end
 end
 
-local teleport_nearest = function(pos)
+local function teleport_nearest(pos)
 	local MAX_TELEPORTATION_DISTANCE = tonumber(minetest.setting_get("moremesecons_teleporter.max_t2t_distance")) or 50
 	if MAX_TELEPORTATION_DISTANCE <= 0 then
 		MAX_TELEPORTATION_DISTANCE = 1
@@ -94,14 +105,7 @@ minetest.register_node("moremesecons_teleporter:teleporter", {
 		if RID then
 			table.remove(teleporters, RID)
 			vector.remove_data_from_pos(teleporters_rids, pos.z,pos.y,pos.x)
+			update_mod_storage()
 		end
 	end,
-})
-
-
-minetest.register_lbm({
-	name = "moremesecons_teleporter:add_teleporter",
-	nodenames = {"moremesecons_teleporter:teleporter"},
-	run_at_every_load = true,
-	action = register
 })
