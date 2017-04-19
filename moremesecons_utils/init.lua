@@ -3,7 +3,7 @@ moremesecons = {}
 function moremesecons.setting(modname, settingname, default, min, val_under_min)
 	local setting = "moremesecons_" .. modname .. "." .. settingname
 
-	if type(default) == "bool" then
+	if type(default) == "boolean" then
 		local ret = minetest.setting_getbool(setting)
 		if ret == nil then
 			ret = default
