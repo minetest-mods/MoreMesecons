@@ -48,7 +48,7 @@ end
 minetest.after(0, function() -- After loading all mods, override some functions
 	local jammed
 
-	local actual_node_get = minetest.get_node_or_nil
+	local actual_node_get = mesecon.get_node_force
 	local function temp_node_get(pos, ...)
 		local node = actual_node_get(pos, ...)
 		if jammed == nil
@@ -86,13 +86,13 @@ minetest.after(0, function() -- After loading all mods, override some functions
 	local actual_turnon = mesecon.turnon
 	function mesecon.turnon(...)
 		--set those to the temporary functions
-		minetest.get_node_or_nil = temp_node_get
+		mesecon.get_node_force = temp_node_get
 		mesecon.is_conductor_off = temp_is_conductor_off
 		mesecon.is_effector = temp_is_effector
 
 		actual_turnon(...)
 
-		minetest.get_node_or_nil = actual_node_get
+		mesecon.get_node_force = actual_node_get
 		mesecon.is_conductor_off = actual_is_conductor_off
 		mesecon.is_effector = actual_is_effector
 
