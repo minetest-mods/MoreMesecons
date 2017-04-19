@@ -232,3 +232,19 @@ minetest.register_craft({
 		{"group:mesecon_conductor_craftable", "", "group:mesecon_conductor_craftable"},
 	}
 })
+
+if minetest.setting_getbool("moremesecons_wireless.enable_lbm") then
+	minetest.register_lbm({
+		name = "moremesecons_wireless:add_jammer",
+		nodenames = {"moremesecons_wireless:jammer_on"},
+		run_at_every_load = true,
+		action = add_jammer
+	})
+
+	minetest.register_lbm({
+		name = "moremesecons_wireless:add_wireless",
+		nodenames = {"moremesecons_wireless:wireless"},
+		run_at_every_load = true,
+		action = register_RID
+	})
+end

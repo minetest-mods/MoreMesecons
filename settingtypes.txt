@@ -44,8 +44,20 @@ moremesecons_teleporter.max_t2t_distance (Maximum Teleporter To Teleporter dista
 # Any value less than or equal to 0 will be set to 1
 moremesecons_teleporter.max_p2t_distance (Maximum Player To Teleporter distance) float 25
 
+# Whether to enable the registration LBM.
+# The registration LBM will recover a teleporter network if the moremesecons_teleporter
+# mod storage has been removed, and will create that mod storage after an update
+# from an older version which did not use it.
+moremesecons_teleporter.enable_lbm (Enable Registration LBM) bool false
+
 [Wireless]
 
 # Wireless Jammer action range
 # Any value less than or equal to 0 will be changed to 1 and a NaN value will be changed to the default value
 moremesecons_wireless.jammer_max_distance (Wireless Jammer action range) float 15
+
+# Whether to enable the registration LBM.
+# The registration LBM will recover a wireless network if the moremesecons_wireless
+# mod storage has been removed, and will create that mod storage after an update
+# from an older version which did not use it.
+moremesecons_wireless.enable_lbm (Enable Registration LBM) bool false
