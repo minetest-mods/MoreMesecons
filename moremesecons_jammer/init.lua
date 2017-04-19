@@ -16,12 +16,7 @@ local function remove_jammer(pos)
 end
 
 local function is_jammed(pos)
-	local JAMMER_MAX_DISTANCE = tonumber(minetest.setting_get("moresecons_jammer.max_distance")) or 10
-	if JAMMER_MAX_DISTANCE <= 0 then
-		JAMMER_MAX_DISTANCE = 1
-	elseif JAMMER_MAX_DISTANCE ~= JAMMER_MAX_DISTANCE then -- NaN
-		JAMMER_MAX_DISTANCE = 10
-	end
+	local JAMMER_MAX_DISTANCE = moremesecons.setting("jammer", "max_distance", 10, 1)
 
 	local pz,py,px = vector.unpack(pos)
 	for z,yxs in pairs(jammers) do

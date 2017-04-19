@@ -130,12 +130,7 @@ end
 
 -- looks big, but should work fast
 function is_jammed(pos)
-	local JAMMER_MAX_DISTANCE = tonumber(minetest.setting_get("moremesecons_wireless.jammer_max_distance")) or 15
-	if JAMMER_MAX_DISTANCE <= 0 then
-		JAMMER_MAX_DISTANCE = 1
-	elseif JAMMER_MAX_DISTANCE ~= JAMMER_MAX_DISTANCE then -- NaN
-		JAMMER_MAX_DISTANCE = 15
-	end
+	local JAMMER_MAX_DISTANCE = moremesecons.setting("wireless", "jammer_max_distance", 15, 1)
 
 	local pz,py,px = vector.unpack(pos)
 	for z,yxs in pairs(jammers) do
@@ -233,7 +228,7 @@ minetest.register_craft({
 	}
 })
 
-if minetest.setting_getbool("moremesecons_wireless.enable_lbm") then
+if moremesecons.setting("wireless", "enable_lbm", false) then
 	minetest.register_lbm({
 		name = "moremesecons_wireless:add_jammer",
 		nodenames = {"moremesecons_wireless:jammer_on"},

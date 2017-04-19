@@ -1,10 +1,5 @@
 local kill_nearest_player = function(pos)
-	local MAX_DISTANCE = tonumber(minetest.setting_get("moremesecons_playerkiller.max_distance")) or 8 -- Use this number to set maximal distance to kill
-	if MAX_DISTANCE <= 0 then
-		MAX_DISTANCE = 8
-	elseif MAX_DISTANCE ~= MAX_DISTANCE then -- NaN
-		MAX_DISTANCE = 8
-	end
+	local MAX_DISTANCE = moremesecons.setting("playerkiller", "max_distance", 8, 1)
 
 	-- Search the nearest player
 	local nearest

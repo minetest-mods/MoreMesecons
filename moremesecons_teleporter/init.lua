@@ -21,18 +21,8 @@ local function register(pos)
 end
 
 local function teleport_nearest(pos)
-	local MAX_TELEPORTATION_DISTANCE = tonumber(minetest.setting_get("moremesecons_teleporter.max_t2t_distance")) or 50
-	if MAX_TELEPORTATION_DISTANCE <= 0 then
-		MAX_TELEPORTATION_DISTANCE = 1
-	elseif MAX_TELEPORTATION_DISTANCE ~= MAX_TELEPORTATION_DISTANCE then -- NaN
-		MAX_TELEPORTATION_DISTANCE = 50
-	end
-	local MAX_PLAYER_DISTANCE = tonumber(minetest.setting_get("moremesecons_teleporter.max_p2t_distance")) or 25
-	if MAX_PLAYER_DISTANCE <= 0 then
-		MAX_PLAYER_DISTANCE = 1
-	elseif MAX_PLAYER_DISTANCE ~= MAX_PLAYER_DISTANCE then -- NaN
-		MAX_PLAYER_DISTANCE = 25
-	end
+	local MAX_TELEPORTATION_DISTANCE = moremesecons.setting("teleporter", "max_t2t_distance", 50, 1)
+	local MAX_PLAYER_DISTANCE = moremesecons.setting("teleporter", "max_p2t_distance", 25, 1)
 
 	-- Search for the nearest player
 	local nearest = nil
@@ -110,7 +100,7 @@ minetest.register_node("moremesecons_teleporter:teleporter", {
 	end,
 })
 
-if minetest.setting_getbool("moremesecons_teleporter.enable_lbm") then
+if moremesecons.setting("teleporter", "enable_lbm", false) then
 	minetest.register_lbm({
 		name = "moremesecons_teleporter:add_teleporter",
 		nodenames = {"moremesecons_teleporter:teleporter"},

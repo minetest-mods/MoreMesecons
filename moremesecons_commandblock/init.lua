@@ -1,10 +1,5 @@
 local function initialize_data(meta)
-	local NEAREST_MAX_DISTANCE = tonumber(minetest.setting_get("moremesecons_commandblock.nearest_max_distance")) or 8
-	if NEAREST_MAX_DISTANCE <= 0 then
-		NEAREST_MAX_DISTANCE = 1
-	elseif NEAREST_MAX_DISTANCE ~= NEAREST_MAX_DISTANCE then -- NaN
-		NEAREST_MAX_DISTANCE = 8
-	end
+	local NEAREST_MAX_DISTANCE = moremesecons.setting("commandblock", "nearest_max_distance", 8, 1)
 
 	local commands = meta:get_string("commands")
 	meta:set_string("formspec",
@@ -72,20 +67,13 @@ local function resolve_commands(commands, pos)
 end
 
 local function commandblock_action_on(pos, node)
-	local NEAREST_MAX_DISTANCE = tonumber(minetest.setting_get("moremesecons_commandblock.nearest_max_distance")) or 8
-	if NEAREST_MAX_DISTANCE <= 0 then
-		NEAREST_MAX_DISTANCE = 1
-	end
+	local NEAREST_MAX_DISTANCE = moremesecons.setting("commandblock", "nearest_max_distance", 8, 1)
 
 	local accepted_commands = {}
 	do
-		local commands_str = minetest.setting_get("moremesecons_commandblock.authorized_commands")
-		if commands_str then
-			for command in string.gmatch(commands_str, "([^ ]+)") do
-				accepted_commands[command] = true
-			end
-		else
-			accepted_commands = {tell = true}
+		local commands_str = moremesecons.setting("commandblock", "authorized_commands", "tell")
+		for command in string.gmatch(commands_str, "([^ ]+)") do
+			accepted_commands[command] = true
 		end
 	end
 

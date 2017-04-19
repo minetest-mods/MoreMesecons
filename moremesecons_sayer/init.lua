@@ -1,7 +1,4 @@
-local use_speech_dispatcher = minetest.setting_getbool("moremesecons_sayer.use_speech_dispatcher")
-if use_speech_dispatcher == nil then
-	use_speech_dispatcher = true
-end
+local use_speech_dispatcher = moremesecons.setting("sayer", "use_speech_dispatcher", true)
 
 local popen, execute = io.popen, os.execute
 if use_speech_dispatcher then
@@ -44,13 +41,7 @@ if use_speech_dispatcher then
 	end
 
 	function sayer_activate(pos)
-		local MAX_DISTANCE = tonumber(minetest.setting_get("moremesecons_sayer.max_distance")) or 8
-		if MAX_DISTANCE <= 0 then
-			MAX_DISTANCE = 1
-		elseif MAX_DISTANCE ~= MAX_DISTANCE then -- NaN
-			MAX_DISTANCE = 8
-		end
-		MAX_DISTANCE = MAX_DISTANCE^2
+		local MAX_DISTANCE = moremesecons.setting("sayer", "max_distance", 8, 1) ^ 2
 
 		local text = minetest.get_meta(pos):get_string("text")
 		if text == "" then
@@ -85,12 +76,7 @@ if use_speech_dispatcher then
 	end
 else
 	function sayer_activate(pos)
-		local MAX_DISTANCE = tonumber(minetest.setting_get("moremesecons_sayer.max_distance")) or 8
-		if MAX_DISTANCE <= 0 then
-			MAX_DISTANCE = 1
-		elseif MAX_DISTANCE ~= MAX_DISTANCE then -- NaN
-			MAX_DISTANCE = 8
-		end
+		local MAX_DISTANCE = moremesecons.setting("sayer", "max_distance", 8, 1)
 
 		local tab = {
 			"Sayer at pos",
