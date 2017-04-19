@@ -1,5 +1,5 @@
 local function dual_delayer_get_input_rules(node)
-	local rules = {{x=-1, y=0, z=0}}
+	local rules = {{x=1, y=0, z=0}}
 	for i = 0, node.param2 do
 		rules = mesecon.rotate_rules_left(rules)
 	end
@@ -7,7 +7,7 @@ local function dual_delayer_get_input_rules(node)
 end
 
 local function dual_delayer_get_output_rules(node)
-	local rules = {{x=0, y=0, z=-1}, {x=0, y=0, z=1}}
+	local rules = {{x=0, y=0, z=1}, {x=0, y=0, z=-1}}
 	for i = 0, node.param2 do
 		rules = mesecon.rotate_rules_left(rules)
 	end
@@ -68,7 +68,7 @@ for n,i in pairs({{0,0},{1,0},{1,1}}) do
 		drawtype = "nodebox",
 		node_box = {
 			type = "fixed",
-			fixed = {{-6/16, -8/16, -1/16, 6/16, -7/16, 8/16 },
+			fixed = {{-6/16, -8/16, -8/16, 6/16, -7/16, 1/16 },
 				{-8/16, -8/16, 1/16, -6/16, -7/16, -1/16},
 				{8/16, -8/16, -1/16, 6/16, -7/16, 1/16}}
 		},
