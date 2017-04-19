@@ -4,11 +4,10 @@ Based on Mesecons by Jeija
 By @paly2 and @HybridDog  
 With the participation of @LeMagnesium (bugfix), @Ataron (textures), @JAPP (texture).  
 
-Dependencies: [Mesecons](https://github.com/Jeija/minetest-mod-mesecons/), [vector_extras](https://github.com/HybridDog/vector_extras/), [digilines](https://github.com/minetest-mods/digilines) (optional).
+Dependencies: [Mesecons](https://github.com/Jeija/minetest-mod-mesecons/)  
+Optional dependencies: [vector_extras](https://github.com/HybridDog/vector_extras/) [digilines](https://github.com/minetest-mods/digilines)
 
-This mod is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License v3.0 as published by the Free Software Foundation. You should have received a copy of the GNU General Public License along with this mod.
-
-MoreMesecons is a mod for minetest wich adds some mesecons items.
+MoreMesecons is a mod for minetest which adds some mesecons items.
 
 [Here](http://github.com/minetest-mods/MoreMesecons/wiki)'s the wiki !
 
