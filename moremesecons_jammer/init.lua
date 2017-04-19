@@ -3,16 +3,25 @@ local get = vector.get_data_from_pos
 local set = vector.set_data_to_pos
 local remove = vector.remove_data_from_pos
 
-local jammers = {}
+local jammers
+local storage = minetest.get_mod_storage()
+jammers = minetest.deserialize(storage:get_string("jammers")) or {}
+
+local function update_mod_storage()
+	storage:set_string("jammers", minetest.serialize(jammers))
+end
+
 local function add_jammer(pos)
 	if get(jammers, pos.z,pos.y,pos.x) then
 		return
 	end
 	set(jammers, pos.z,pos.y,pos.x, true)
+	update_mod_storage()
 end
 
 local function remove_jammer(pos)
 	remove(jammers, pos.z,pos.y,pos.x)
+	update_mod_storage()
 end
 
 local function is_jammed(pos)
@@ -124,9 +133,11 @@ minetest.register_craft({
 		{"", "moremesecons_wireless:jammer_off", ""}}
 })
 
-minetest.register_lbm({
-	name = "moremesecons_jammer:add_jammer",
-	nodenames = {"moremesecons_jammer:jammer_on"},
-	run_at_every_load = true,
-	action = add_jammer
-})
+if moremesecons.setting("jammer", "enable_lbm", false) then
+	minetest.register_lbm({
+		name = "moremesecons_jammer:add_jammer",
+		nodenames = {"moremesecons_jammer:jammer_on"},
+		run_at_every_load = true,
+		action = add_jammer
+	})
+end
