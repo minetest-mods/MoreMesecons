@@ -1,6 +1,6 @@
 moremesecons = {}
 
-function moremesecons.setting(modname, settingname, default, min, val_under_min)
+function moremesecons.setting(modname, settingname, default, min)
 	local setting = "moremesecons_" .. modname .. "." .. settingname
 
 	if type(default) == "boolean" then
@@ -14,14 +14,12 @@ function moremesecons.setting(modname, settingname, default, min, val_under_min)
 	elseif type(default) == "number" then
 		local ret = tonumber(minetest.setting_get(setting)) or default
 		if ret ~= ret then -- NaN
-			minetest.log("warning", "[moremesecons_"..modname.."]: setting '"..setting.."' is NaN. Set to default value "..tostring(default)..".")
+			minetest.log("warning", "[moremesecons_"..modname.."]: setting '"..setting.."' is NaN. Set to default value ("..tostring(default)..").")
 			ret = default
 		end
-		if min then
-			if ret < min then
-				minetest.log("warning", "[moremesecons_"..modname.."]: setting '"..setting.."' is under minimum value "..tostring(min)..". Set to "..tostring(val_under_min or min)..".")
-				ret = val_under_min or min
-			end
+		if min and ret < min then
+			minetest.log("warning", "[moremesecons_"..modname.."]: setting '"..setting.."' is under minimum value "..tostring(min)..". Set to minimum value ("..tostring(min)..").")
+			ret = min
 		end
 		return ret
 	end
