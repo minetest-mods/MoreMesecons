@@ -1,15 +1,15 @@
 local wireless
-local wireless_rids
+local wireless_meta -- This table contains wireless metadatas, it is a lot faster to access
 local jammers
 
 local storage = minetest.get_mod_storage()
 wireless = minetest.deserialize(storage:get_string("wireless")) or {}
-wireless_rids = minetest.deserialize(storage:get_string("wireless_rids")) or {}
+wireless_meta = minetest.deserialize(storage:get_string("wireless_meta")) or {owners = {}, channels = {}, ids = {}}
 jammers = minetest.deserialize(storage:get_string("jammers")) or {}
 
 local function update_mod_storage()
 	storage:set_string("wireless", minetest.serialize(wireless))
-	storage:set_string("wireless_rids", minetest.serialize(wireless_rids))
+	storage:set_string("wireless_meta", minetest.serialize(wireless_meta))
 	storage:set_string("jammers", minetest.serialize(jammers))
 end
 
@@ -18,14 +18,103 @@ local get = vector.get_data_from_pos
 local set = vector.set_data_to_pos
 local remove = vector.remove_data_from_pos
 
--- if the wireless at pos isn't stored yet, put it into the tables
-local function register_RID(pos)
-	if get(wireless_rids, pos.z,pos.y,pos.x) then
+local function remove_wireless(pos)
+	local meta = minetest.get_meta(pos)
+
+	local owner = meta:get_string("owner")
+	if not owner then
 		return
 	end
-	local RID = #wireless+1
-	wireless[RID] = pos
-	set(wireless_rids, pos.z,pos.y,pos.x, RID)
+	if not wireless[owner] or not next(wireless[owner]) then
+		wireless[owner] = nil
+		return
+	end
+
+	local channel = meta:get_string("channel")
+	if channel == "" or not wireless[owner][channel] then
+		return
+	end
+
+	table.remove(wireless[owner][channel], meta:get_int("id"))
+	if #wireless[owner][channel] == 0 then
+		wireless[owner][channel] = nil
+		if not next(wireless[owner]) then
+			wireless[owner] = nil
+		end
+	end
+
+	remove(wireless_meta.owners, pos.z,pos.y,pos.x)
+	remove(wireless_meta.channels, pos.z,pos.y,pos.x)
+	remove(wireless_meta.ids, pos.z,pos.y,pos.x)
+end
+
+local set_channel
+local function set_owner(pos, owner)
+	local meta = minetest.get_meta(pos)
+	meta:set_string("owner", owner)
+	set(wireless_meta.owners, pos.z,pos.y,pos.x, owner)
+	if not wireless[owner] then
+		wireless[owner] = {}
+	end
+
+	local channel = meta:get_string("channel")
+	if channel and channel ~= "" then
+		if not wireless[owner][channel] then
+			wireless[owner][channel] = {}
+		end
+		set_channel(pos, channel)
+	end
+
+	meta:set_string("infotext", "Wireless owned by " .. owner .. " on " .. ((channel and channel ~= "") and "channel " .. channel or "undefined channel"))
+end
+
+function set_channel(pos, channel)
+	if not channel or channel == "" then
+		return
+	end
+
+	local meta = minetest.get_meta(pos)
+	local owner = meta:get_string("owner")
+	if not owner then
+		return
+	end
+
+	local old_channel = meta:get_string("channel")
+	if old_channel then
+		remove_wireless(pos)
+	end
+
+	meta:set_string("channel", channel)
+	set(wireless_meta.channels, pos.z,pos.y,pos.x, channel)
+	if not wireless[owner] then
+		wireless[owner] = {}
+	end
+	if not wireless[owner][channel] then
+		wireless[owner][channel] = {}
+	end
+	table.insert(wireless[owner][channel], pos)
+	meta:set_int("id", #wireless[owner][channel])
+	set(wireless_meta.ids, pos.z,pos.y,pos.x, #wireless[owner][channel])
+
+	meta:set_string("infotext", "Wireless owned by " .. owner .. " on channel " .. channel)
+end
+
+local function register_wireless(pos)
+	local meta = minetest.get_meta(pos)
+
+	local owner = meta:get_string("owner")
+	if not owner then
+		return
+	end
+	if not wireless[owner] then
+		wireless[owner] = {}
+	end
+
+	local channel = meta:get_string("channel")
+	if channel then
+		set_channel(pos, channel)
+	end
+
 	update_mod_storage()
 end
 
@@ -36,15 +125,17 @@ local function wireless_activate(pos)
 		return
 	end
 
-	local channel_first_wireless = minetest.get_meta(pos):get_string("channel")
-	if channel_first_wireless == "" then
+	local channel = get(wireless_meta.channels, pos.z,pos.y,pos.x)
+	local owner = get(wireless_meta.owners, pos.z,pos.y,pos.x)
+	local id = get(wireless_meta.ids, pos.z,pos.y,pos.x)
+
+	if owner == "" or not wireless[owner] or channel == "" or not wireless[owner][channel] then
 		return
 	end
 
-	for i = 1, #wireless do
-		if not vector.equals(wireless[i], pos)
-		and minetest.get_meta(wireless[i]):get_string("channel") == channel_first_wireless then
-			mesecon.receptor_on(wireless[i])
+	for i, wl_pos in ipairs(wireless[owner][channel]) do
+		if i ~= id then
+			mesecon.receptor_on(wl_pos)
 		end
 	end
 end
@@ -53,11 +144,18 @@ local function wireless_deactivate(pos)
 	if is_jammed(pos) then
 		return
 	end
-	local channel_first_wireless = minetest.get_meta(pos):get_string("channel")
-	for i = 1, #wireless do
-		if not vector.equals(wireless[i], pos)
-		and minetest.get_meta(wireless[i]):get_string("channel") == channel_first_wireless then
-			mesecon.receptor_off(wireless[i])
+
+	local channel = get(wireless_meta.channels, pos.z,pos.y,pos.x)
+	local owner = get(wireless_meta.owners, pos.z,pos.y,pos.x)
+	local id = get(wireless_meta.ids, pos.z,pos.y,pos.x)
+
+	if owner == "" or not wireless[owner] or channel == "" or not wireless[owner][channel] then
+		return
+	end
+
+	for i, wl_pos in ipairs(wireless[owner][channel]) do
+		if i ~= id then
+			mesecon.receptor_off(wl_pos)
 		end
 	end
 end
@@ -67,10 +165,18 @@ local function on_digiline_receive(pos, node, channel, msg)
 	if channel ~= setchan or is_jammed(pos) or setchan == "" then
 		return
 	end
-	for i = 1, #wireless do
-		if not vector.equals(wireless[i], pos)
-		and minetest.get_meta(wireless[i]):get_string("channel") == channel then
-			digiline:receptor_send(wireless[i], digiline.rules.default, channel, msg)
+
+	local channel = get(wireless_meta.channels, pos.z,pos.y,pos.x)
+	local owner = get(wireless_meta.owners, pos.z,pos.y,pos.x)
+	local id = get(wireless_meta.ids, pos.z,pos.y,pos.x)
+
+	if owner == "" or not wireless[owner] or channel == "" or not wireless[owner][channel] then
+		return
+	end
+
+	for i, wl_pos in ipairs(wireless[owner][channel]) do
+		if i ~= id then
+			digiline:receptor_send(wl_pos, digiline.rules.default, channel, msg)
 		end
 	end
 end
@@ -95,21 +201,34 @@ minetest.register_node("moremesecons_wireless:wireless", {
 	sounds = default.node_sound_stone_defaults(),
 	on_construct = function(pos)
 		minetest.get_meta(pos):set_string("formspec", "field[channel;channel;${channel}]")
-		register_RID(pos)
 	end,
 	on_destruct = function(pos)
-		local RID = get(wireless_rids, pos.z,pos.y,pos.x)
-		if RID then
-			table.remove(wireless, RID)
-			remove(wireless_rids, pos.z,pos.y,pos.x)
-			update_mod_storage()
-		end
+		remove_wireless(pos)
 		mesecon.receptor_off(pos)
 	end,
+	after_place_node = function(pos, placer)
+		local placername = placer:get_player_name()
+		set_owner(pos, placer:get_player_name())
+		update_mod_storage()
+	end,
 	on_receive_fields = function(pos, _, fields, player)
-		if fields.channel
-		and not minetest.is_protected(pos, player:get_player_name()) then
-			minetest.get_meta(pos):set_string("channel", fields.channel)
+		local meta = minetest.get_meta(pos)
+		local playername = player:get_player_name()
+
+		local owner = meta:get_string("owner")
+		if not owner or owner == "" then
+			-- Old wireless
+			if not minetest.is_protected(pos, playername) then
+				set_owner(pos, playername)
+				update_mod_storage()
+			else
+				return
+			end
+		end
+
+		if playername == owner then
+			set_channel(pos, fields.channel)
+			update_mod_storage()
 		end
 	end,
 })
@@ -240,6 +359,47 @@ if moremesecons.setting("wireless", "enable_lbm", false) then
 		name = "moremesecons_wireless:add_wireless",
 		nodenames = {"moremesecons_wireless:wireless"},
 		run_at_every_load = true,
-		action = register_RID
+		action = register_wireless
+	})
+end
+
+
+-- Legacy
+if storage:get_string("wireless_rids") and storage:get_string("wireless_rids") ~= "" then
+	-- Upgrade mod storage!
+	local wireless_rids = minetest.deserialize(storage:get_string("wireless_rids"))
+	local old_wireless = table.copy(wireless)
+	wireless = {}
+
+	minetest.after(0, function(old_wireless)
+		-- After loading all mods, try to guess owners based on the areas mod database.
+		-- That won't work for all wireless. Owners of remaining wireless will be set
+		-- to the first player using their formspec.
+		if not areas then
+			return
+		end
+		for RID, pos in ipairs(old_wireless) do
+			local numerous_owners = false
+			local owner
+			for _, area in pairs(areas:getAreasAtPos(pos)) do
+				if owner and area.owner ~= owner then
+					numerous_owners = true
+					break
+				end
+				owner = area.owner
+			end
+
+			if not numerous_owners and owner then
+				set_owner(pos, owner)
+				set_channel(pos, minetest.get_meta(pos):get_string("channel"))
+			end
+		end
+	end, old_wireless)
+
+	-- Remove wireless_rids from storage
+	storage:from_table({
+		jammers = jammers,
+		wireless_meta = wireless_meta,
+		wireless = wireless
 	})
 end
