@@ -50,6 +50,9 @@ end
 
 local set_channel
 local function set_owner(pos, owner)
+	if not owner or owner == "" then
+		return
+	end
 	local meta = minetest.get_meta(pos)
 	meta:set_string("owner", owner)
 	set(wireless_meta.owners, pos.z,pos.y,pos.x, owner)
@@ -75,13 +78,14 @@ function set_channel(pos, channel)
 
 	local meta = minetest.get_meta(pos)
 	local owner = meta:get_string("owner")
-	if not owner then
+	if owner == "" then
 		return
 	end
 
 	local old_channel = meta:get_string("channel")
-	if old_channel then
+	if old_channel and old_channel ~= channel then
 		remove_wireless(pos)
+		set_owner(pos, owner)
 	end
 
 	meta:set_string("channel", channel)
@@ -103,15 +107,13 @@ local function register_wireless(pos)
 	local meta = minetest.get_meta(pos)
 
 	local owner = meta:get_string("owner")
-	if not owner then
+	if owner == "" then
 		return
 	end
-	if not wireless[owner] then
-		wireless[owner] = {}
-	end
+	set_owner(pos, owner)
 
 	local channel = meta:get_string("channel")
-	if channel then
+	if channel ~= "" then
 		set_channel(pos, channel)
 	end
 
