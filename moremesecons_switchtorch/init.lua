@@ -34,7 +34,7 @@ local torch_get_input_rules = function(node)
 end
 
 minetest.register_craft({
-	output = "moremesecons_switchtorch:switchtorch_on 4",
+	output = "moremesecons_switchtorch:switchtorch_off 4",
 	recipe = {
 		{"default:stick"},
 		{"group:mesecon_conductor_craftable"},
