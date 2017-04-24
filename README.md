@@ -22,6 +22,7 @@ MoreMesecons is a mod for minetest which adds some mesecons items.
 * `Igniter` : This node is a lighter that ignites its adjacent flammable nodes (including TNT).
 * `Injector Controller` : This node is useful to activate/deactivate a pipeworks filter injector : it sends a blinky signal.
 * `Jammer` : If turned on, this node stops mesecons in a radius of 10 nodes.
+* `LuaBlock`: This block allows its owner to execute any Lua code in the global environment when turned on. Using it requires the server privilege.
 * `Luacontroller Template Tool` : This tool is very useful to manipulate templates with luacontrollers. Just click with it on a luacontroller, then you'll see a formspec.
 * `Player Killer` : This block kills the nearest player (with a maximal distance of 8 blocks by default) (if this player isn't its owner) when it receives a mesecons signal.
 * `Sayer` : This node sends a message to every players inside a radius of 8 nodes.
