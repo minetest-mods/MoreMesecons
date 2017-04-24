@@ -29,7 +29,7 @@ MoreMesecons is a mod for minetest which adds some mesecons items.
 * `Signal Changer` : If it receives a signal on its pin "F", it turns on. If it receives a signal on its pin "O", it turns off. Note : an inverted signal is sended at the other end of the arrow.
 * `Switch Torch` : It connects just like Mesecons Torch. If it receives a signal, it turns on, and if it receives a second signal, it turns off.
 * `Teleporter` : If you place one teleporter, it teleports the nearest player on itself when it receives a mesecons signal. If you place two teleporters on the same axis, when one receives a mesecons signal, it teleports the nearest player on the second (with a maximal distance of 50 nodes by default). The player teleporter must be inside a radius of 25 nodes.
-* `Temporary Gate` : If it receives a mesecons signal, whatever its duration, a mesecons signal is send with a fixed duration. You can change it in the formspec by right-clicking on the gate.
+* `Time Gate` : If it receives a mesecons signal, whatever its duration, a mesecons signal is send with a fixed duration. You can change it in the formspec by right-clicking on the gate.
 * `Wireless` : Place 2 (or more) wireless somewhere. Change their channel by right-click. If you send a signal to a wireless, every wireless wich have the same channel will send the signal. Compatible with digiline mod.
 * `Wireless Jammer` : If it receives a mesecons signal, it deactivates all wireless (receptors) in a radius of 15 nodes.
 
