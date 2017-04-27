@@ -19,10 +19,8 @@ local set = vector.set_data_to_pos
 local remove = vector.remove_data_from_pos
 
 local function remove_wireless(pos)
-	local meta = minetest.get_meta(pos)
-
-	local owner = meta:get_string("owner")
-	if not owner then
+	local owner = get(wireless_meta.owners, pos.z,pos.y,pos.x)
+	if not owner or owner == "" then
 		return
 	end
 	if not wireless[owner] or not next(wireless[owner]) then
@@ -30,12 +28,12 @@ local function remove_wireless(pos)
 		return
 	end
 
-	local channel = meta:get_string("channel")
-	if channel == "" or not wireless[owner][channel] then
+	local channel = get(wireless_meta.channels, pos.z,pos.y,pos.x)
+	if not channel or channel == "" or not wireless[owner][channel] then
 		return
 	end
 
-	table.remove(wireless[owner][channel], meta:get_int("id"))
+	table.remove(wireless[owner][channel], get(wireless_meta.ids, pos.z,pos.y,pos.x))
 	if #wireless[owner][channel] == 0 then
 		wireless[owner][channel] = nil
 		if not next(wireless[owner]) then
@@ -60,7 +58,7 @@ local function set_owner(pos, owner)
 		wireless[owner] = {}
 	end
 
-	local channel = meta:get_string("channel")
+	local channel = get(wireless_meta.channels, pos.z,pos.y,pos.x)
 	if channel and channel ~= "" then
 		if not wireless[owner][channel] then
 			wireless[owner][channel] = {}
@@ -77,13 +75,13 @@ function set_channel(pos, channel)
 	end
 
 	local meta = minetest.get_meta(pos)
-	local owner = meta:get_string("owner")
-	if owner == "" then
+	local owner = get(wireless_meta.owners, pos.z,pos.y,pos.x)
+	if owner or owner == "" then
 		return
 	end
 
-	local old_channel = meta:get_string("channel")
-	if old_channel and old_channel ~= channel then
+	local old_channel = get(wireless_meta.channels, pos.z,pos.y,pos.x)
+	if old_channel and old_channel ~= "" and old_channel ~= channel then
 		remove_wireless(pos)
 		set_owner(pos, owner)
 	end
@@ -104,16 +102,15 @@ function set_channel(pos, channel)
 end
 
 local function register_wireless(pos)
-	local meta = minetest.get_meta(pos)
 
-	local owner = meta:get_string("owner")
-	if owner == "" then
+	local owner = get(wireless_meta.owners, pos.z,pos.y,pos.x)
+	if not owner or owner == "" then
 		return
 	end
 	set_owner(pos, owner)
 
-	local channel = meta:get_string("channel")
-	if channel ~= "" then
+	local channel = get(wireless_meta.channels, pos.z,pos.y,pos.x)
+	if channel and channel ~= "" then
 		set_channel(pos, channel)
 	end
 
@@ -206,6 +203,7 @@ minetest.register_node("moremesecons_wireless:wireless", {
 	end,
 	on_destruct = function(pos)
 		remove_wireless(pos)
+		update_mod_storage()
 		mesecon.receptor_off(pos)
 	end,
 	after_place_node = function(pos, placer)
