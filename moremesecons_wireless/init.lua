@@ -125,6 +125,7 @@ end
 
 local is_jammed
 local function wireless_activate(pos)
+	print("activating wireless at pos " .. minetest.pos_to_string(pos))
 	if is_jammed(pos) then
 		-- jamming doesn't disallow receiving signals, only sending them
 		return
@@ -138,8 +139,10 @@ local function wireless_activate(pos)
 		return
 	end
 
+	minetest.swap_node(pos, {name = "moremesecons_wireless:wireless_on"})
 	for i, wl_pos in ipairs(wireless[owner][channel]) do
 		if i ~= id then
+			minetest.swap_node(wl_pos, {name = "moremesecons_wireless:wireless_on"})
 			mesecon.receptor_on(wl_pos)
 		end
 	end
@@ -158,8 +161,10 @@ local function wireless_deactivate(pos)
 		return
 	end
 
+	minetest.swap_node(pos, {name = "moremesecons_wireless:wireless_off"})
 	for i, wl_pos in ipairs(wireless[owner][channel]) do
 		if i ~= id then
+			minetest.swap_node(wl_pos, {name = "moremesecons_wireless:wireless_off"})
 			mesecon.receptor_off(wl_pos)
 		end
 	end
@@ -186,17 +191,10 @@ local function on_digiline_receive(pos, node, channel, msg)
 	end
 end
 
-minetest.register_node("moremesecons_wireless:wireless", {
-	tiles = {"moremesecons_wireless.png"},
+mesecon.register_node("moremesecons_wireless:wireless", {
 	paramtype = "light",
 	paramtype2 = "facedir",
 	description = "Wireless",
-	walkable = true,
-	groups = {cracky=3},
-	mesecons = {effector = {
-		action_on = wireless_activate,
-		action_off = wireless_deactivate
-	}},
 	digiline = {
 		receptor = {},
 		effector = {
@@ -237,7 +235,21 @@ minetest.register_node("moremesecons_wireless:wireless", {
 			update_mod_storage()
 		end
 	end,
+}, {
+	tiles = {"moremesecons_wireless_off.png"},
+	groups = {cracky=3},
+	mesecons = {effector = {
+		action_on = wireless_activate,
+	}},
+}, {
+	tiles = {"moremesecons_wireless_on.png"},
+	groups = {cracky=3, not_in_creative_inventory=1},
+	mesecons = {effector = {
+		action_off = wireless_deactivate
+	}},
 })
+
+minetest.register_alias("moremesecons_wireless:wireless", "moremesecons_wireless:wireless_off")
 
 local jammers = {}
 local function add_jammer(pos)
@@ -345,7 +357,7 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = "moremesecons_wireless:wireless 2",
+	output = "moremesecons_wireless:wireless_off 2",
 	recipe = {
 		{"group:mesecon_conductor_craftable", "", "group:mesecon_conductor_craftable"},
 		{"", "mesecons_torch:mesecon_torch_on", ""},
