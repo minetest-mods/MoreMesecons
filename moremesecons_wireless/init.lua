@@ -125,7 +125,6 @@ end
 
 local is_jammed
 local function wireless_activate(pos)
-	print("activating wireless at pos " .. minetest.pos_to_string(pos))
 	if is_jammed(pos) then
 		-- jamming doesn't disallow receiving signals, only sending them
 		return
