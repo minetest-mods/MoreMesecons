@@ -23,13 +23,14 @@ local function remove_wireless(pos)
 	if not owner or owner == "" then
 		return
 	end
+	remove(wireless_meta.owners, pos.z,pos.y,pos.x)
 	if not wireless[owner] or not next(wireless[owner]) then
 		wireless[owner] = nil
 		return
 	end
 
 	local channel = get(wireless_meta.channels, pos.z,pos.y,pos.x)
-	if not channel or channel == "" or not wireless[owner][channel] then
+	if not channel or channel == "" then
 		return
 	end
 
@@ -41,7 +42,6 @@ local function remove_wireless(pos)
 		end
 	end
 
-	remove(wireless_meta.owners, pos.z,pos.y,pos.x)
 	remove(wireless_meta.channels, pos.z,pos.y,pos.x)
 	remove(wireless_meta.ids, pos.z,pos.y,pos.x)
 end
@@ -94,9 +94,15 @@ function set_channel(pos, channel)
 	if not wireless[owner][channel] then
 		wireless[owner][channel] = {}
 	end
-	table.insert(wireless[owner][channel], pos)
-	meta:set_int("id", #wireless[owner][channel])
-	set(wireless_meta.ids, pos.z,pos.y,pos.x, #wireless[owner][channel])
+
+	local id = get(wireless_meta.ids, pos.z,pos.y,pos.x)
+	if id then
+		wireless[owner][channel][id] = pos
+	else
+		table.insert(wireless[owner][channel], pos)
+		meta:set_int("id", #wireless[owner][channel])
+		set(wireless_meta.ids, pos.z,pos.y,pos.x, #wireless[owner][channel])
+	end
 
 	meta:set_string("infotext", "Wireless owned by " .. owner .. " on channel " .. channel)
 end
