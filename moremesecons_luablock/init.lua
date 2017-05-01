@@ -98,6 +98,9 @@ minetest.register_node("moremesecons_luablock:luablock", {
 				make_formspec(meta, pos)
 				return
 			end
+			local env = _G
+			env.pos = table.copy(pos)
+			setfenv(func, env)
 			local good, err = pcall(func)
 			-- Still alive! No shutdown requested? No infinite loop?
 			if not good then -- Runtime error
