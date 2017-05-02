@@ -81,8 +81,8 @@ minetest.register_node("moremesecons_luablock:luablock", {
 		return meta:get_string("owner") == player:get_player_name()
 	end,
 	mesecons = {effector = {
-		action_on = function(pos, node)
-			local meta = minetest.get_meta(pos)
+		action_on = function(npos, node)
+			local meta = minetest.get_meta(npos)
 			local code = meta:get_string("code")
 			if code == "" then
 				return
@@ -98,11 +98,12 @@ minetest.register_node("moremesecons_luablock:luablock", {
 				make_formspec(meta, pos)
 				return
 			end
-			local env = _G
-			env.pos = table.copy(pos)
-			setfenv(func, env)
+			-- Set the "pos" global
+			local old_pos = pos -- In case there's already an existing "pos" global
+			pos = table.copy(npos)
 			local good, err = pcall(func)
-			-- Still alive! No shutdown requested? No infinite loop?
+			pos = old_pos
+
 			if not good then -- Runtime error
 				meta:set_string("errmsg", err)
 				make_formspec(meta, pos)
