@@ -1,3 +1,4 @@
 mesecons
 mesecons_materials
 moremesecons_utils
+craft_guide?
