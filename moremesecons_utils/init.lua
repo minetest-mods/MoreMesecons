@@ -13,7 +13,10 @@ function moremesecons.setting(modname, settingname, default, min)
 		return minetest.setting_get(setting) or default
 	elseif type(default) == "number" then
 		local ret = tonumber(minetest.setting_get(setting)) or default
-		if ret ~= ret then -- NaN
+		if not ret then
+			minetest.log("warning", "[moremesecons_"..modname.."]: setting '"..setting.."' must be a number. Set to default value ("..tostring(default)..").")
+			ret = default
+		elseif ret ~= ret then -- NaN
 			minetest.log("warning", "[moremesecons_"..modname.."]: setting '"..setting.."' is NaN. Set to default value ("..tostring(default)..").")
 			ret = default
 		end

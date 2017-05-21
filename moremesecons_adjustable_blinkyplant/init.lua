@@ -4,7 +4,11 @@ local toggle_timer = function (pos, restart)
 	and not restart then
 		timer:stop()
 	else
-		timer:start(tonumber(minetest.get_meta(pos):get_string("interval")) or 0)
+		local interval = tonumber(minetest.get_meta(pos):get_string("interval")) or 1
+		if interval < moremesecons.setting("adjustable_blinky_plant", "min_interval", 0.5) then
+			interval = moremesecons.setting("adjustable_blinky_plant", "min_interval", 0.5)
+		end
+		timer:start(interval)
 	end
 end
 
@@ -30,7 +34,9 @@ mesecon.register_node("moremesecons_adjustable_blinkyplant:adjustable_blinky_pla
 	},
 	on_timer = on_timer,
 	on_construct = function(pos)
-		minetest.get_meta(pos):set_string("formspec", "field[interval;interval;${interval}]")
+		local meta = minetest.get_meta(pos)
+		meta:set_string("interval", "1")
+		meta:set_string("formspec", "field[interval;interval;${interval}]")
 		toggle_timer(pos, true)
 	end,
 	on_receive_fields = function(pos, _, fields, player)
