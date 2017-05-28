@@ -94,3 +94,11 @@ mesecon.register_node("moremesecons_induction_transmitter:induction_transmitter"
 		}
 	}
 })
+
+minetest.register_craft({
+	output = "moremesecons_induction_transmitter:induction_transmitter_off",
+	recipe = {
+		{"default:mese_crystal_fragment", "mesecons_torch:mesecon_torch_on", "default:mese_crystal_fragment"},
+		{"", "default:mese_crystal_fragment", ""}
+	}
+})
