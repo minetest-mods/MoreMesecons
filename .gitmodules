@@ -1,3 +1,0 @@
-[submodule "moremesecons_luablock/md5_lua"]
-	path = moremesecons_luablock/md5_lua
-	url = https://github.com/kikito/md5.lua.git
