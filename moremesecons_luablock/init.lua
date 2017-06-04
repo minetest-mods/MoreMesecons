@@ -1,3 +1,39 @@
+local hash_table
+local md5
+local storage
+if minetest.get_mod_storage then
+	md5 = dofile(minetest.get_modpath(minetest.get_current_modname()).."/md5_lua/md5.lua")
+	storage = minetest.get_mod_storage()
+	hash_table = minetest.deserialize(storage:get_string("hash_table")) or {}
+else
+	minetest.log("warning", "[moremesecons_luablock] Your version of Minetest does not provide a mod storage API. The mod storage allows moremesecons_luablock to store md5 checksums, which avoids some potential security breaches.")
+end
+
+local function set_md5(pos, code)
+	if not hash_table then
+		return
+	end
+	vector.set_data_to_pos(hash_table, pos.z,pos.y,pos.x, md5.sum(code))
+	storage:set_string("hash_table", minetest.serialize(hash_table))
+end
+
+local function check_md5(pos, code)
+	if not hash_table then
+		return true
+	end
+	local stored_sum = vector.get_data_from_pos(hash_table, pos.z,pos.y,pos.x)
+	if not stored_sum then
+		-- Legacy
+		set_md5(pos, code)
+		return true
+	end
+	if md5.sum(code) ~= stored_sum then
+		return false
+	end
+	return true
+end
+
+
 local function make_formspec(meta, pos)
 	local code = meta:get_string("code")
 	local errmsg = minetest.formspec_escape(meta:get_string("errmsg"))
@@ -74,6 +110,7 @@ minetest.register_node("moremesecons_luablock:luablock", {
 		end
 
 		meta:set_string("code", fields.code)
+		set_md5(pos, fields.code)
 		make_formspec(meta, pos)
 	end,
 	can_dig = function(pos, player)
@@ -85,6 +122,10 @@ minetest.register_node("moremesecons_luablock:luablock", {
 			local meta = minetest.get_meta(npos)
 			local code = meta:get_string("code")
 			if code == "" then
+				return
+			end
+			if not check_md5(npos, code) then
+				minetest.log("warning", "[moremesecons_luablock] Code of LuaBlock at pos "..minetest.pos_to_string(npos).." does not match with its md5 checksum!")
 				return
 			end
 			-- We do absolutely no check there.

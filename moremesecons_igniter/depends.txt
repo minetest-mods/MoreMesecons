@@ -1,2 +1,3 @@
 mesecons
 fire
+craft_guide?

@@ -1,3 +1,8 @@
+[Adjustable Blinky Plant]
+
+# Minimal interval authorized. Any lower will be set to it.
+moremesecons_adjustable_blinky_plant.min_interval (Minimum Interval) float 0.5
+
 [Craftable Commandblock]
 
 # Space-separated list of authorized commands
