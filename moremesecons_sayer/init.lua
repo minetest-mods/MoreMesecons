@@ -35,7 +35,7 @@ if use_speech_dispatcher then
 		nil,
 		""
 	}
-	local language = minetest.setting_get("language") or "en"
+	local language = minetest.settings:get("language") or "en"
 	if language ~= "en" then
 		tab[3] = "-l "..language
 	end
