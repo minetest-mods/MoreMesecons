@@ -150,8 +150,8 @@ end
 
 -- do not localize the function directly here to support possible overwritten luacontrollers
 local luac_def = minetest.registered_nodes["mesecons_luacontroller:luacontroller0000"]
-local function set_luacontroller_code(pos, code)
-	luac_def.on_receive_fields(pos, nil, {code=code, program=""})
+local function set_luacontroller_code(pos, code, sender)
+	luac_def.on_receive_fields(pos, nil, {code=code, program=""}, sender)
 end
 
 minetest.register_tool("moremesecons_luacontroller_tool:lctt", {
@@ -254,7 +254,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		-- replace the code of the luacontroller with the template
 		local code = get_code_or_nil(pname, fields.player_name, fields.template_name)
 		if code then
-			set_luacontroller_code(pos, code)
+			set_luacontroller_code(pos, code, player)
 			minetest.chat_send_player(pname, "code set to template at "..minetest.pos_to_string(pos))
 		end
 		return
@@ -264,7 +264,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		-- add the template to the end of the code of the luacontroller
 		local code = get_code_or_nil(pname, fields.player_name, fields.template_name)
 		if code then
-			set_luacontroller_code(pos, meta:get_string("code").."\r"..code)
+			set_luacontroller_code(pos, meta:get_string("code").."\r"..code, player)
 			minetest.chat_send_player(pname, "code added to luacontroller at "..minetest.pos_to_string(pos))
 		end
 		return
