@@ -64,12 +64,12 @@ end
 default.register_chest("mesechest", {
 	description = "Mese Chest",
 	tiles = {
-		"default_chest_top.png",
-		"default_chest_top.png",
-		"default_chest_side.png",
-		"default_chest_side.png",
-		"default_chest_front.png",
-		"default_chest_inside.png"
+		"default_chest_top.png^[colorize:#d8e002:70",
+		"default_chest_top.png^[colorize:#d8e002:70",
+		"default_chest_side.png^[colorize:#d8e002:70",
+		"default_chest_side.png^[colorize:#d8e002:70",
+		"default_chest_front.png^[colorize:#d8e002:70",
+		"default_chest_inside.png^[colorize:#d8e002:70"
 	},
 	sounds = default.node_sound_wood_defaults(),
 	sound_open = "default_chest_open",
@@ -85,12 +85,12 @@ default.register_chest("mesechest", {
 default.register_chest("mesechest_locked", {
 	description = "Locked Mese Chest",
 	tiles = {
-		"default_chest_top.png",
-		"default_chest_top.png",
-		"default_chest_side.png",
-		"default_chest_side.png",
-		"default_chest_lock.png",
-		"default_chest_inside.png"
+		"default_chest_top.png^[colorize:#d8e002:70",
+		"default_chest_top.png^[colorize:#d8e002:70",
+		"default_chest_side.png^[colorize:#d8e002:70",
+		"default_chest_side.png^[colorize:#d8e002:70",
+		"default_chest_lock.png^[colorize:#d8e002:70",
+		"default_chest_inside.png^[colorize:#d8e002:70"
 	},
 	sounds = default.node_sound_wood_defaults(),
 	sound_open = "default_chest_open",
