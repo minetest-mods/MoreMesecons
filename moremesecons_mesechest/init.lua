@@ -14,8 +14,6 @@ local open_chests = {}
 -- Override minetest.register_node so it adds a prefix ":"
 local old_minetest_register_node = minetest.register_node
 minetest.register_node = function(name, def)
-	old_minetest_register_node(":"..name, def)
-
 	local old_on_metadata_inventory_put = def.on_metadata_inventory_put
 	local old_on_metadata_inventory_take = def.on_metadata_inventory_take
 	local old_on_rightclick = def.on_rightclick
@@ -40,6 +38,8 @@ minetest.register_node = function(name, def)
 			open_chests[clicker:get_player_name()] = pos
 		end
 	end
+
+	old_minetest_register_node(":"..name, def)
 end
 local old_minetest_register_lbm = minetest.register_lbm
 minetest.register_lbm = function() end
@@ -63,7 +63,14 @@ end
 
 default.register_chest("mesechest", {
 	description = "Mese Chest",
-	tiles = { "default_chest_wood.png" },
+	tiles = {
+		"default_chest_top.png",
+		"default_chest_top.png",
+		"default_chest_side.png",
+		"default_chest_side.png",
+		"default_chest_front.png",
+		"default_chest_inside.png"
+	},
 	sounds = default.node_sound_wood_defaults(),
 	sound_open = "default_chest_open",
 	sound_close = "default_chest_close",
@@ -77,7 +84,14 @@ default.register_chest("mesechest", {
 
 default.register_chest("mesechest_locked", {
 	description = "Locked Mese Chest",
-	tiles = { "default_chest_wood_locked.png" },
+	tiles = {
+		"default_chest_top.png",
+		"default_chest_top.png",
+		"default_chest_side.png",
+		"default_chest_side.png",
+		"default_chest_lock.png",
+		"default_chest_inside.png"
+	},
 	sounds = default.node_sound_wood_defaults(),
 	sound_open = "default_chest_open",
 	sound_close = "default_chest_close",
