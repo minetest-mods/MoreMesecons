@@ -106,3 +106,13 @@ default.register_chest("mesechest_locked", {
 
 minetest.register_node = old_minetest_register_node
 minetest.register_lbm = old_minetest_register_lbm
+
+minetest.register_craft({
+	output = "default:mesechest",
+	recipe = {{"group:mesecon_conductor_craftable", "default:chest", "group:mesecon_conductor_craftable"}}
+})
+
+minetest.register_craft({
+	output = "default:mesechest_locked",
+	recipe = {{"group:mesecon_conductor_craftable", "default:chest_locked", "group:mesecon_conductor_craftable"}}
+})
