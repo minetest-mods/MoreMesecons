@@ -1,25 +1,10 @@
-local teleporters
-local teleporters_rids
+local storage = minetest.get_mod_storage()
 
-local enable_lbm = moremesecons.setting("teleporter", "enable_lbm", false)
-local storage
-if not minetest.get_mod_storage then
-	enable_lbm = true -- No mod storage (<= 0.4.15-stable): force registration of LBM
-	teleporters = {}
-	teleporters_rids = {}
-	jammers = {}
-else
-	storage = minetest.get_mod_storage()
-
-	teleporters = minetest.deserialize(storage:get_string("teleporters")) or {}
-	teleporters_rids = minetest.deserialize(storage:get_string("teleporters_rids")) or {}
-	jammers = minetest.deserialize(storage:get_string("jammers")) or {}
-end
+local teleporters = minetest.deserialize(storage:get_string("teleporters")) or {}
+local teleporters_rids = minetest.deserialize(storage:get_string("teleporters_rids")) or {}
+local jammers = minetest.deserialize(storage:get_string("jammers")) or {}
 
 local function update_mod_storage()
-	if not storage then
-		return
-	end
 	storage:set_string("teleporters", minetest.serialize(teleporters))
 	storage:set_string("teleporters_rids", minetest.serialize(teleporters_rids))
 end
@@ -113,7 +98,7 @@ minetest.register_node("moremesecons_teleporter:teleporter", {
 	end,
 })
 
-if enable_lbm then
+if moremesecons.setting("teleporter", "enable_lbm", false) then
 	minetest.register_lbm({
 		name = "moremesecons_teleporter:add_teleporter",
 		nodenames = {"moremesecons_teleporter:teleporter"},

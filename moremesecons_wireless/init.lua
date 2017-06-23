@@ -1,26 +1,10 @@
-local wireless
-local wireless_meta -- This table contains wireless metadatas, it is a lot faster to access
-local jammers
+local storage = minetest.get_mod_storage()
 
-local enable_lbm = moremesecons.setting("wireless", "enable_lbm", false)
-local storage
-if not minetest.get_mod_storage then
-	enable_lbm = true -- No mod storage (<= 0.4.15-stable): force registration of LBM
-	wireless = {}
-	wireless_meta = {owners = {}, channels = {}, ids = {}}
-	jammers = {}
-else
-	storage = minetest.get_mod_storage()
-
-	wireless = minetest.deserialize(storage:get_string("wireless")) or {}
-	wireless_meta = minetest.deserialize(storage:get_string("wireless_meta")) or {owners = {}, channels = {}, ids = {}}
-	jammers = minetest.deserialize(storage:get_string("jammers")) or {}
-end
+local wireless = minetest.deserialize(storage:get_string("wireless")) or {}
+local wireless_meta = minetest.deserialize(storage:get_string("wireless_meta")) or {owners = {}, channels = {}, ids = {}}
+local jammers = minetest.deserialize(storage:get_string("jammers")) or {}
 
 local function update_mod_storage()
-	if not storage then
-		return
-	end
 	storage:set_string("wireless", minetest.serialize(wireless))
 	storage:set_string("wireless_meta", minetest.serialize(wireless_meta))
 	storage:set_string("jammers", minetest.serialize(jammers))
@@ -377,7 +361,7 @@ minetest.register_craft({
 	}
 })
 
-if enable_lbm then
+if moremesecons.setting("wireless", "enable_lbm", false) then
 	minetest.register_lbm({
 		name = "moremesecons_wireless:add_jammer",
 		nodenames = {"moremesecons_wireless:jammer_on"},

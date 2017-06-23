@@ -1,26 +1,13 @@
-local hash_table
-local md5
-local storage
-if minetest.get_mod_storage then
-	md5 = dofile(minetest.get_modpath(minetest.get_current_modname()).."/md5_lua/md5.lua")
-	storage = minetest.get_mod_storage()
-	hash_table = minetest.deserialize(storage:get_string("hash_table")) or {}
-else
-	minetest.log("warning", "[moremesecons_luablock] Your version of Minetest does not provide a mod storage API. The mod storage allows moremesecons_luablock to store md5 checksums, which avoids some potential security breaches.")
-end
+local md5 = dofile(minetest.get_modpath(minetest.get_current_modname()).."/md5_lua/md5.lua")
+local storage = minetest.get_mod_storage()
+local hash_table = minetest.deserialize(storage:get_string("hash_table")) or {}
 
 local function set_md5(pos, code)
-	if not hash_table then
-		return
-	end
 	vector.set_data_to_pos(hash_table, pos.z,pos.y,pos.x, md5.sum(code))
 	storage:set_string("hash_table", minetest.serialize(hash_table))
 end
 
 local function check_md5(pos, code)
-	if not hash_table then
-		return true
-	end
 	local stored_sum = vector.get_data_from_pos(hash_table, pos.z,pos.y,pos.x)
 	if not stored_sum then
 		-- Legacy
