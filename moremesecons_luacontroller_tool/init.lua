@@ -223,10 +223,10 @@ minetest.register_tool("moremesecons_luacontroller_tool:lctt", {
 			return
 		end
 
-		pdata[pname] = pdata[pname] or {
+		pdata[pname] = {
 			pos = pos,
 			player_name = pname,
-			template_name = next(templates[pname] or templates[next(templates)]),
+			template_name = pdata[pname] and pdata[pname].template_name or next(templates[pname] or templates[next(templates)]),
 		}
 		minetest.show_formspec(pname, "moremesecons:luacontroller_tool", get_selection_formspec(pdata[pname].player_name, pdata[pname].template_name))
 	end,
