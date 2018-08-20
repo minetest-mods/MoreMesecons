@@ -30,7 +30,7 @@ local kill_nearest_player = function(pos)
 
 	-- And kill him
 	nearest:set_hp(0)
-	minetest.log("action", "Player "..owner.." kills player "..nearest.." using a MoreMesecons Player Killer.")
+	minetest.log("action", "Player "..owner.." kills player "..nearest:get_player_name().." using a MoreMesecons Player Killer.")
 end
 
 minetest.register_craft({
