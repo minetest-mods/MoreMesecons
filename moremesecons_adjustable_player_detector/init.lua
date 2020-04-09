@@ -37,18 +37,18 @@ local object_detector_scan = function (pos)
 	local scan_all = scanname == ""
 	local scan_names = scanname:split(',')
 	local radius = meta:get_int("radius")
-	if radius == 0 then
+	if radius <= 0 then
 		radius = 6
 	end
 	for _,obj in pairs(minetest.get_objects_inside_radius(pos, radius)) do
 		local isname = obj:get_player_name() -- "" is returned if it is not a player; "" ~= nil!
 		if isname ~= "" then
 			if scan_all then
-				return true
+				return true, isname
 			end
 			for _, name in ipairs(scan_names) do
 				if isname == name then
-					return true
+					return true, isname
 				end
 			end
 		end
@@ -65,12 +65,32 @@ local object_detector_digiline = {
 			if channel ~= active_channel then
 				return
 			end
-			meta:set_string("scanname", msg)
-			if meta:get_string("formspec") ~= "" then
+			if type(msg) == "string" then
+				meta:set_string("scanname", msg)
 				make_formspec(meta)
+			elseif type(msg) == "table" then
+				if msg.radius then
+					local r = tonumber(msg.radius)
+					if r then
+						meta:set_int("radius", tonumber(msg.radius))
+						make_formspec(meta)
+					end
+				end
+				if msg.scanname then
+					meta:set_string("scanname", msg.scanname)
+					make_formspec(meta)
+				end
+				if msg.command and msg.command == "get" then
+					local found, name = object_detector_scan(pos)
+					if not found then
+						name = ""
+					end
+					digiline:receptor_send(pos, digiline.rules.default, channel, name)
+				end
 			end
 		end,
-	}
+	},
+	receptor = {}
 }
 
 minetest.register_node("moremesecons_adjustable_player_detector:player_detector_off", {
