@@ -28,6 +28,30 @@ function moremesecons.setting(modname, settingname, default, min)
 	end
 end
 
+-- Storage helpers
+
+function moremesecons.get_storage_data(storage, name)
+	return {
+		tab = minetest.deserialize(storage:get_string(name)) or {},
+		name = name,
+		storage = storage
+	}
+end
+
+function moremesecons.set_data_to_pos(sto, pos, data)
+	sto.tab[minetest.hash_node_position(pos)] = data
+	sto.storage:set_string(sto.name, minetest.serialize(sto.tab))
+end
+
+function moremesecons.get_data_from_pos(sto, pos)
+	return sto.tab[minetest.hash_node_position(pos)]
+end
+
+function moremesecons.remove_data_from_pos(sto, pos)
+	sto.tab[minetest.hash_node_position(pos)] = nil
+	sto.storage:set_string(sto.name, minetest.serialize(sto.tab))
+end
+
 -- Vector helpers
 -- All the following functions are from the vector_extras mod (https://github.com/HybridDog/vector_extras).
 -- If you enable that mod, its functions will be used instead of the ones defined below
