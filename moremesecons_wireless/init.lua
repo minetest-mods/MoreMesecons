@@ -120,6 +120,18 @@ local function register_wireless(pos)
 	update_mod_storage()
 end
 
+local function check_wireless_exists(pos)
+	local nn = minetest.get_node(pos).name
+	if nn:sub(1, 30) == "moremesecons_wireless:wireless" then
+		return true
+	elseif nn ~= "ignore" then
+		-- Defer the remove_wireless() call so it doesn't interfere
+		-- with ipairs().
+		minetest.after(0, remove_wireless, pos)
+		return false
+	end
+end
+
 local is_jammed
 local function wireless_activate(pos)
 	if is_jammed(pos) then
@@ -137,7 +149,7 @@ local function wireless_activate(pos)
 
 	minetest.swap_node(pos, {name = "moremesecons_wireless:wireless_on"})
 	for i, wl_pos in ipairs(wireless[owner][channel]) do
-		if i ~= id then
+		if i ~= id and check_wireless_exists(wl_pos) then
 			minetest.swap_node(wl_pos, {name = "moremesecons_wireless:wireless_on"})
 			mesecon.receptor_on(wl_pos)
 		end
@@ -159,7 +171,7 @@ local function wireless_deactivate(pos)
 
 	minetest.swap_node(pos, {name = "moremesecons_wireless:wireless_off"})
 	for i, wl_pos in ipairs(wireless[owner][channel]) do
-		if i ~= id then
+		if i ~= id and check_wireless_exists(wl_pos) then
 			minetest.swap_node(wl_pos, {name = "moremesecons_wireless:wireless_off"})
 			mesecon.receptor_off(wl_pos)
 		end
@@ -181,7 +193,7 @@ local function on_digiline_receive(pos, node, channel, msg)
 	end
 
 	for i, wl_pos in ipairs(wireless[owner][channel]) do
-		if i ~= id then
+		if i ~= id and check_wireless_exists(wl_pos) then
 			digiline:receptor_send(wl_pos, digiline.rules.default, channel, msg)
 		end
 	end
