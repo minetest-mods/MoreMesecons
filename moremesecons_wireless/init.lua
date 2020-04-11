@@ -1,107 +1,145 @@
 local storage = minetest.get_mod_storage()
 
-local wireless = minetest.deserialize(storage:get_string("wireless")) or {}
-local wireless_meta = minetest.deserialize(storage:get_string("wireless_meta")) or {owners = {}, channels = {}, ids = {}}
-local jammers = minetest.deserialize(storage:get_string("jammers")) or {}
+-- Names wireless_meta, and jammers were used in old versions of this mod.
+-- There is legacy code at the end of this file to migrate the mod storage.
+local wireless = minetest.deserialize(storage:get_string("networks")) or {}
+local wireless_meta = moremesecons.get_storage_data(storage, "wireless_meta_2")
+local jammers = moremesecons.get_storage_data(storage, "jammers_2")
 
 local function update_mod_storage()
-	storage:set_string("wireless", minetest.serialize(wireless))
-	storage:set_string("wireless_meta", minetest.serialize(wireless_meta))
-	storage:set_string("jammers", minetest.serialize(jammers))
+	storage:set_string("networks", minetest.serialize(wireless))
 end
 
--- localize these functions with small names because they work fairly fast
-local get = vector.get_data_from_pos
-local set = vector.set_data_to_pos
-local remove = vector.remove_data_from_pos
-
+local wireless_effector_off
 local function remove_wireless(pos)
-	local owner = get(wireless_meta.owners, pos.z,pos.y,pos.x)
-	if not owner or owner == "" then
-		return
-	end
-	remove(wireless_meta.owners, pos.z,pos.y,pos.x)
-	if not wireless[owner] or not next(wireless[owner]) then
-		wireless[owner] = nil
+	local wls = moremesecons.get_data_from_pos(wireless_meta, pos)
+	if not wls then
 		return
 	end
 
-	local channel = get(wireless_meta.channels, pos.z,pos.y,pos.x)
-	if not channel or channel == "" then
+	if not wls.owner or wls.owner == "" then
+		moremesecons.remove_data_from_pos(wireless_meta, pos)
 		return
 	end
 
-	table.remove(wireless[owner][channel], get(wireless_meta.ids, pos.z,pos.y,pos.x))
-	if #wireless[owner][channel] == 0 then
-		wireless[owner][channel] = nil
-		if not next(wireless[owner]) then
-			wireless[owner] = nil
+	if not wireless[wls.owner] or not next(wireless[wls.owner]) then
+		wireless[wls.owner] = nil
+		moremesecons.remove_data_from_pos(wireless_meta, pos)
+		return
+	end
+
+	if not wls.channel or wls.channel == "" then
+		moremesecons.remove_data_from_pos(wireless_meta, pos)
+		return
+	end
+
+	local network = wireless[wls.owner][wls.channel]
+
+	if network.sources[wls.id] then
+		wireless_effector_off(pos)
+	end
+
+	moremesecons.remove_data_from_pos(wireless_meta, pos)
+
+	network.members[wls.id] = nil
+	if not next(network.members) then
+		wireless[wls.owner][wls.channel] = nil
+		if not next(wireless[wls.owner]) then
+			wireless[wls.owner] = nil
 		end
 	end
-
-	remove(wireless_meta.channels, pos.z,pos.y,pos.x)
-	remove(wireless_meta.ids, pos.z,pos.y,pos.x)
+	update_mod_storage()
 end
 
-local set_channel
 local function set_owner(pos, owner)
 	if not owner or owner == "" then
 		return
 	end
+
+	remove_wireless(pos)
+
 	local meta = minetest.get_meta(pos)
-	meta:set_string("owner", owner)
-	set(wireless_meta.owners, pos.z,pos.y,pos.x, owner)
+	if meta then
+		meta:set_string("owner", owner)
+	end
+
+	local wls = moremesecons.get_data_from_pos(wireless_meta, pos) or {}
+	wls.owner = owner
+	moremesecons.set_data_to_pos(wireless_meta, pos, wls)
+
 	if not wireless[owner] then
 		wireless[owner] = {}
 	end
 
-	local channel = get(wireless_meta.channels, pos.z,pos.y,pos.x)
-	if channel and channel ~= "" then
-		if not wireless[owner][channel] then
-			wireless[owner][channel] = {}
-		end
-		set_channel(pos, channel)
+	if meta then
+		meta:set_string("infotext", "Wireless owned by " .. owner .. " on " .. ((wls.channel and wls.channel ~= "") and "channel " .. wls.channel or "undefined channel"))
 	end
-
-	meta:set_string("infotext", "Wireless owned by " .. owner .. " on " .. ((channel and channel ~= "") and "channel " .. channel or "undefined channel"))
 end
 
-function set_channel(pos, channel)
+local wireless_receptor_on
+local wireless_receptor_off
+local wireless_effector_on
+local function set_channel(pos, channel)
 	if not channel or channel == "" then
 		return
 	end
 
 	local meta = minetest.get_meta(pos)
-	local owner = get(wireless_meta.owners, pos.z,pos.y,pos.x)
-	if not owner or owner == "" then
+
+	local wls = moremesecons.get_data_from_pos(wireless_meta, pos)
+	if not wls or wls.owner == "" then
 		return
 	end
 
-	local old_channel = get(wireless_meta.channels, pos.z,pos.y,pos.x)
-	if old_channel and old_channel ~= "" and old_channel ~= channel then
+	if wls.id then
 		remove_wireless(pos)
-		set_owner(pos, owner)
 	end
 
-	meta:set_string("channel", channel)
-	set(wireless_meta.channels, pos.z,pos.y,pos.x, channel)
-	if not wireless[owner] then
-		wireless[owner] = {}
+	if meta then
+		meta:set_string("channel", channel)
 	end
-	if not wireless[owner][channel] then
-		wireless[owner][channel] = {}
+	wls.channel = channel
+	moremesecons.set_data_to_pos(wireless_meta, pos, wls)
+
+	if not wireless[wls.owner] then
+		wireless[wls.owner] = {}
+	end
+	if not wireless[wls.owner][channel] then
+		wireless[wls.owner][channel] = {
+			members = {},
+			sources = {}
+		}
 	end
 
-	local id = get(wireless_meta.ids, pos.z,pos.y,pos.x)
-	if id then
-		wireless[owner][channel][id] = pos
+	-- Find the first free ID
+	local id = 1
+	while wireless[wls.owner][channel].members[id] do
+		id = id + 1
+	end
+	wls.id = id
+	moremesecons.set_data_to_pos(wireless_meta, pos, wls)
+
+	local network = wireless[wls.owner][channel]
+
+	network.members[id] = pos
+
+	if meta then
+		meta:set_int("id", id)
+	end
+
+	update_mod_storage()
+
+	if meta then
+		meta:set_string("infotext", "Wireless owned by " .. wls.owner .. " on channel " .. channel)
+	end
+
+	if wls.effector then
+		wireless_effector_on(pos)
+	elseif next(network.sources) then
+		wireless_receptor_on(pos, id, network, false)
 	else
-		table.insert(wireless[owner][channel], pos)
-		meta:set_int("id", #wireless[owner][channel])
-		set(wireless_meta.ids, pos.z,pos.y,pos.x, #wireless[owner][channel])
+		wireless_receptor_off(pos, id, network, false)
 	end
-
-	meta:set_string("infotext", "Wireless owned by " .. owner .. " on channel " .. channel)
 end
 
 local function register_wireless(pos)
@@ -110,14 +148,14 @@ local function register_wireless(pos)
 	if owner == "" then
 		return
 	end
+	remove_wireless(pos)
+
 	set_owner(pos, owner)
 
 	local channel = meta:get_string("channel")
 	if channel ~= "" then
 		set_channel(pos, channel)
 	end
-
-	update_mod_storage()
 end
 
 local function check_wireless_exists(pos)
@@ -126,56 +164,93 @@ local function check_wireless_exists(pos)
 		return true
 	elseif nn ~= "ignore" then
 		-- Defer the remove_wireless() call so it doesn't interfere
-		-- with ipairs().
+		-- with pairs().
 		minetest.after(0, remove_wireless, pos)
 		return false
 	end
 end
 
+function wireless_receptor_on(pos, id, network, check)
+	if check == false or check_wireless_exists(pos) then
+		minetest.swap_node(pos, {name = "moremesecons_wireless:wireless_on"})
+		if not network.sources[id] then
+			mesecon.receptor_on(pos)
+		end
+	end
+end
+
+function wireless_receptor_off(pos, id, network, check)
+	if check == false or check_wireless_exists(pos) then
+		minetest.swap_node(pos, {name = "moremesecons_wireless:wireless_off"})
+		mesecon.receptor_off(pos)
+	end
+end
+
+function activate_network(owner, channel)
+	local network = wireless[owner][channel]
+	for i, wl_pos in pairs(network.members) do
+		wireless_receptor_on(wl_pos, id, network)
+	end
+end
+
+local function deactivate_network(owner, channel)
+	local network = wireless[owner][channel]
+	for i, wl_pos in pairs(network.members) do
+		wireless_receptor_off(wl_pos, i, network)
+	end
+end
+
 local is_jammed
-local function wireless_activate(pos)
+function wireless_effector_on(pos)
 	if is_jammed(pos) then
 		-- jamming doesn't disallow receiving signals, only sending them
 		return
 	end
 
-	local channel = get(wireless_meta.channels, pos.z,pos.y,pos.x)
-	local owner = get(wireless_meta.owners, pos.z,pos.y,pos.x)
-	local id = get(wireless_meta.ids, pos.z,pos.y,pos.x)
-
-	if owner == "" or not wireless[owner] or channel == "" or not wireless[owner][channel] then
+	local wls = moremesecons.get_data_from_pos(wireless_meta, pos)
+	if not wls then
 		return
 	end
 
-	minetest.swap_node(pos, {name = "moremesecons_wireless:wireless_on"})
-	for i, wl_pos in ipairs(wireless[owner][channel]) do
-		if i ~= id and check_wireless_exists(wl_pos) then
-			minetest.swap_node(wl_pos, {name = "moremesecons_wireless:wireless_on"})
-			mesecon.receptor_on(wl_pos)
-		end
+	wls.effector = true
+
+	moremesecons.set_data_to_pos(wireless_meta, pos, wls)
+
+	if wls.owner == "" or not wireless[wls.owner] or wls.channel == "" or not wireless[wls.owner][wls.channel] then
+		return
 	end
+
+	local network = wireless[wls.owner][wls.channel]
+	network.sources[wls.id] = true
+	activate_network(wls.owner, wls.channel)
+
+	update_mod_storage()
 end
 
-local function wireless_deactivate(pos)
-	if is_jammed(pos) then
+function wireless_effector_off(pos)
+	local wls = moremesecons.get_data_from_pos(wireless_meta, pos)
+	if not wls then
 		return
 	end
 
-	local channel = get(wireless_meta.channels, pos.z,pos.y,pos.x)
-	local owner = get(wireless_meta.owners, pos.z,pos.y,pos.x)
-	local id = get(wireless_meta.ids, pos.z,pos.y,pos.x)
+	wls.effector = nil
+	moremesecons.set_data_to_pos(wireless_meta, pos, wls)
 
-	if owner == "" or not wireless[owner] or channel == "" or not wireless[owner][channel] then
+	if wls.owner == "" or not wireless[wls.owner] or wls.channel == "" or not wireless[wls.owner][wls.channel] then
 		return
 	end
 
-	minetest.swap_node(pos, {name = "moremesecons_wireless:wireless_off"})
-	for i, wl_pos in ipairs(wireless[owner][channel]) do
-		if i ~= id and check_wireless_exists(wl_pos) then
-			minetest.swap_node(wl_pos, {name = "moremesecons_wireless:wireless_off"})
-			mesecon.receptor_off(wl_pos)
-		end
+	local network = wireless[wls.owner][wls.channel]
+	network.sources[wls.id] = nil
+	if not next(network.sources) then
+		deactivate_network(wls.owner, wls.channel)
+	else
+		-- There is another source in the network. Turn this wireless into
+		-- a receptor.
+		mesecon.receptor_on(pos)
 	end
+
+	update_mod_storage()
 end
 
 local function on_digiline_receive(pos, node, channel, msg)
@@ -184,17 +259,15 @@ local function on_digiline_receive(pos, node, channel, msg)
 		return
 	end
 
-	local channel = get(wireless_meta.channels, pos.z,pos.y,pos.x)
-	local owner = get(wireless_meta.owners, pos.z,pos.y,pos.x)
-	local id = get(wireless_meta.ids, pos.z,pos.y,pos.x)
+	local wls = moremesecons.get_data_from_pos(wireless_meta, pos)
 
-	if owner == "" or not wireless[owner] or channel == "" or not wireless[owner][channel] then
+	if wls.owner == "" or not wireless[wls.owner] or channel == "" or not wireless[wls.owner][wls.channel] then
 		return
 	end
 
-	for i, wl_pos in ipairs(wireless[owner][channel]) do
-		if i ~= id and check_wireless_exists(wl_pos) then
-			digiline:receptor_send(wl_pos, digiline.rules.default, channel, msg)
+	for i, wl_pos in pairs(wireless[wls.owner][wls.channel].members) do
+		if i ~= wls.id and check_wireless_exists(wl_pos) then
+			digiline:receptor_send(wl_pos, digiline.rules.default, wls.channel, msg)
 		end
 	end
 end
@@ -215,13 +288,11 @@ mesecon.register_node("moremesecons_wireless:wireless", {
 	end,
 	on_destruct = function(pos)
 		remove_wireless(pos)
-		update_mod_storage()
 		mesecon.receptor_off(pos)
 	end,
 	after_place_node = function(pos, placer)
 		local placername = placer:get_player_name()
 		set_owner(pos, placer:get_player_name())
-		update_mod_storage()
 	end,
 	on_receive_fields = function(pos, _, fields, player)
 		local meta = minetest.get_meta(pos)
@@ -232,7 +303,6 @@ mesecon.register_node("moremesecons_wireless:wireless", {
 			-- Old wireless
 			if not minetest.is_protected(pos, playername) then
 				set_owner(pos, playername)
-				update_mod_storage()
 			else
 				return
 			end
@@ -240,58 +310,48 @@ mesecon.register_node("moremesecons_wireless:wireless", {
 
 		if playername == owner then
 			set_channel(pos, fields.channel)
-			update_mod_storage()
 		end
 	end,
 }, {
 	tiles = {"moremesecons_wireless_off.png"},
 	groups = {cracky=3},
 	mesecons = {effector = {
-		action_on = wireless_activate,
+		action_on = wireless_effector_on
 	}},
 }, {
 	tiles = {"moremesecons_wireless_on.png"},
 	groups = {cracky=3, not_in_creative_inventory=1},
 	mesecons = {effector = {
-		action_off = wireless_deactivate
+		action_off = wireless_effector_off
 	}},
 })
 
 minetest.register_alias("moremesecons_wireless:wireless", "moremesecons_wireless:wireless_off")
 
-local jammers = {}
-local function add_jammer(pos)
-	if get(jammers, pos.z,pos.y,pos.x) then
-		return
-	end
-	set(jammers, pos.z,pos.y,pos.x, true)
-	update_mod_storage()
-end
-
 local function remove_jammer(pos)
-	remove(jammers, pos.z,pos.y,pos.x)
-	update_mod_storage()
+	moremesecons.remove_data_from_pos(jammers, pos)
 end
 
--- looks big, but should work fast
+local function add_jammer(pos)
+	remove_jammer(pos)
+	moremesecons.set_data_to_pos(jammers, pos, true)
+end
+
 function is_jammed(pos)
 	local JAMMER_MAX_DISTANCE = moremesecons.setting("wireless", "jammer_max_distance", 15, 1)
+	local JAMMER_MAX_DISTANCE_SQUARE = JAMMER_MAX_DISTANCE^2 -- Cache this result
 
-	local pz,py,px = vector.unpack(pos)
-	for z,yxs in pairs(jammers) do
-		if math.abs(pz-z) <= JAMMER_MAX_DISTANCE then
-			for y,xs in pairs(yxs) do
-				if math.abs(py-y) <= JAMMER_MAX_DISTANCE then
-					for x in pairs(xs) do
-						if math.abs(px-x) <= JAMMER_MAX_DISTANCE
-						and (px-x)^2+(py-y)^2+(pz-z)^2 <= JAMMER_MAX_DISTANCE^2 then
-							return true
-						end
-					end
-				end
-			end
+	for pos_hash, _ in pairs(jammers.tab) do
+		local j_pos = minetest.get_position_from_hash(pos_hash)
+		-- Fast comparisons first
+		if math.abs(pos.x - j_pos.x) <= JAMMER_MAX_DISTANCE and
+				math.abs(pos.y - j_pos.y) <= JAMMER_MAX_DISTANCE and
+				math.abs(pos.z - j_pos.z) <= JAMMER_MAX_DISTANCE and
+				(pos.x - j_pos.x)^2 + (pos.y - j_pos.y)^2 + (pos.z - j_pos.z)^2 <= JAMMER_MAX_DISTANCE_SQUARE then
+			return true
 		end
 	end
+
 	return false
 end
 
@@ -387,4 +447,39 @@ if moremesecons.setting("wireless", "enable_lbm", false) then
 		run_at_every_load = true,
 		action = register_wireless
 	})
+end
+
+-- Legacy
+if storage:get_string("wireless_meta_2") == "" then
+	local wireless_meta_1 = minetest.deserialize(storage:get_string("wireless_meta"))
+	if not wireless_meta_1 then
+		return
+	end
+
+	minetest.log("action", "[moremesecons_wireless] Migrating mod storage data...")
+	local jammers_1 = minetest.deserialize(storage:get_string("jammers"))
+
+	local get = vector.get_data_from_pos
+	local set = vector.set_data_to_pos
+	local remove = vector.remove_data_from_pos
+
+	for z, data_z in pairs(wireless_meta_1.owners) do
+	for y, data_y in pairs(data_z) do
+	for x, owner in pairs(data_y) do
+		local pos = {x = x, y = y, z = z}
+		set_owner(pos, owner)
+		set_channel(pos, get(wireless_meta_1.channels, z,y,x))
+	end
+	end
+	end
+
+	for z, data_z in pairs(jammers_1) do
+	for y, data_y in pairs(data_z) do
+	for x, jammer in pairs(data_y) do
+		local pos = {x = x, y = y, z = z}
+		moremesecons.set_data_to_pos(jammers, pos, jammer)
+	end
+	end
+	end
+	minetest.log("action", "[moremesecons_wireless] Done!")
 end
