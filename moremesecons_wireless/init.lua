@@ -254,8 +254,7 @@ function wireless_effector_off(pos)
 end
 
 local function on_digiline_receive(pos, node, channel, msg)
-	local setchan = minetest.get_meta(pos):get_string("channel") -- Note : the digiline channel is the same as the wireless channel. TODO: Making two different channels and a more complex formspec ?
-	if channel ~= setchan or is_jammed(pos) or setchan == "" then
+	if is_jammed(pos) then
 		return
 	end
 
@@ -267,7 +266,7 @@ local function on_digiline_receive(pos, node, channel, msg)
 
 	for i, wl_pos in pairs(wireless[wls.owner][wls.channel].members) do
 		if i ~= wls.id and check_wireless_exists(wl_pos) then
-			digiline:receptor_send(wl_pos, digiline.rules.default, wls.channel, msg)
+			digiline:receptor_send(wl_pos, digiline.rules.default, channel, msg)
 		end
 	end
 end
