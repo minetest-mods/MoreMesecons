@@ -85,6 +85,16 @@ MapDataStorage.__index = {
 			self[vi_zy] = (self[vi_zy] or 0) + 1
 		end
 	end,
+	setAtI = function(self, vi, data)
+		local vi_zy = vi - vi % 0x10000
+		local vi_z = vi - vi % (0x10000 * 0x10000)
+		local is_new = self[vi] == nil
+		self[vi] = data
+		if is_new then
+			self[vi_z] = (self[vi_z] or 0) + 1
+			self[vi_zy] = (self[vi_zy] or 0) + 1
+		end
+	end,
 	removeAt = function(self, pos)
 		local vi_z = (pos.z + 0x8000) * 0x10000 * 0x10000
 		local vi_zy = vi_z + (pos.y + 0x8000) * 0x10000
@@ -201,9 +211,10 @@ MapDataStorage.__index = {
 		return iterfunc
 	end,
 	iterAll = function(self)
-		local pairsfunc = pairs(self)
+		local previous_vi = nil
 		local function iterfunc()
-			local vi, v = pairsfunc()
+			local vi, v = next(self, previous_vi)
+			previous_vi = vi
 			if not vi then
 				return
 			end
@@ -219,9 +230,89 @@ MapDataStorage.__index = {
 			z = z - 0x8000
 			return {x=x, y=y, z=z}, v
 		end
+		return iterfunc
+	end,
+	serialize = function(self)
+		local serialize_data = minetest.serialize
+		local indices = {}
+		local values = {}
+		local i = 1
+		for pos, v in self:iterAll() do
+			local vi = node_position_key(pos)
+			-- Convert the double reversible to a string;
+			-- minetest.serialize does not (yet) do this
+			indices[i] = ("%a"):format(vi)
+			values[i] = serialize_data(v)
+		end
+		result = {
+			version = "MapDataStorage_v1",
+			indices = "return {" .. table.concat(indices, ",") .. "}",
+			values = "return {" .. table.concat(values, ",") .. "}",
+		}
+		return minetest.serialize(result)
 	end,
 }
+MapDataStorage.deserialize = function(txtdata)
+	local data = minetest.deserialize(txtdata)
+	if data.version ~= "MapDataStorage_v1" then
+		minetest.log("error", "Unknown MapDataStorage version: " ..
+			data.version)
+	end
+	-- I assume that minetest.deserialize correctly deserializes the indices,
+	-- which are in the %a format
+	indices = minetest.deserialize(data.indices)
+	values = minetest.deserialize(data.values)
+	data = MapDataStorage()
+	for i = 1,#indices do
+		local vi = indices[i]
+		local v = values[i]
+		data:setAtI(vi, v)
+	end
+	return data
+end
 moremesecons.MapDataStorage = MapDataStorage
+
+
+-- Legacy
+
+-- vector_extras there: https://github.com/HybridDog/vector_extras
+-- Creates a MapDataStorage object from old vector_extras generated table
+function moremesecons.load_old_data_from_pos(t)
+	local data = MapDataStorage()
+	for z, yxv in pairs(t) do
+		for y, xv in pairs(yxv) do
+			for x, v in pairs(xv) do
+				data:setAt({x=x, y=y, z=z}, v)
+			end
+		end
+	end
+	return data
+end
+
+function moremesecons.load_old_dfp_storage(modstorage, name)
+	local data = minetest.deserialize(modstorage:get_string(name))
+	if not data then
+		return
+	end
+	return moremesecons.load_old_data_from_pos(data)
+end
+
+function moremesecons.load_MapDataStorage_legacy(modstorage, name, oldname)
+	local t_old = moremesecons.load_old_dfp_storage(modstorage, oldname)
+	local t
+	if t_old and t_old ~= "" then
+		t = t_old
+		modstorage:set_string(name, t:serialize())
+		modstorage:set_string(oldname, nil)
+		return t
+	end
+	t = modstorage:get_string("teleporters_rids_v2")
+	if t and t ~= "" then
+		return MapDataStorage.deserialize(t)
+	end
+	return MapDataStorage()
+end
+
 
 
 -- This testing code shows an example usage of the MapDataStorage code
@@ -284,53 +375,5 @@ local function do_test()
 
 	--~ data:iterAll()
 end
+--~ do_test()
 
-do_test()
-
-
-if not vector.get_data_from_pos then
-	function vector.get_data_from_pos(tab, z,y,x)
-		local data = tab[z]
-		if data then
-			data = data[y]
-			if data then
-				return data[x]
-			end
-		end
-	end
-end
-
-if not vector.set_data_to_pos then
-	function vector.set_data_to_pos(tab, z,y,x, data)
-		if tab[z] then
-			if tab[z][y] then
-				tab[z][y][x] = data
-				return
-			end
-			tab[z][y] = {[x] = data}
-			return
-		end
-		tab[z] = {[y] = {[x] = data}}
-	end
-end
-
-if not vector.remove_data_from_pos then
-	function vector.remove_data_from_pos(tab, z,y,x)
-		if vector.get_data_from_pos(tab, z,y,x) == nil then
-			return
-		end
-		tab[z][y][x] = nil
-		if not next(tab[z][y]) then
-			tab[z][y] = nil
-		end
-		if not next(tab[z]) then
-			tab[z] = nil
-		end
-	end
-end
-
-if not vector.unpack then
-	function vector.unpack(pos)
-		return pos.z, pos.y, pos.x
-	end
-end

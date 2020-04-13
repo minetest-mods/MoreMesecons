@@ -1,7 +1,3 @@
---[[
-vector_extras there: https://github.com/HybridDog/vector_extras
-]]
-
 local templates = {MoreMesecons = {
 	logic = [[-- AND
 port.a = pin.b and pin.c
