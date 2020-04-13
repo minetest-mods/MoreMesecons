@@ -1,45 +1,35 @@
 -- see wireless jammer
-local get = vector.get_data_from_pos
-local set = vector.set_data_to_pos
-local remove = vector.remove_data_from_pos
-
 local storage = minetest.get_mod_storage()
 
-local jammers = minetest.deserialize(storage:get_string("jammers")) or {}
+local jammers = moremesecons.load_MapDataStorage_legacy(storage, "jammers_v2",
+	"jammers")
 
 local function update_mod_storage()
-	storage:set_string("jammers", minetest.serialize(jammers))
+	storage:set_string("jammers_v2", jammers:serialize())
 end
 
 local function add_jammer(pos)
-	if get(jammers, pos.z,pos.y,pos.x) then
+	if jammers:getAt(pos) then
 		return
 	end
-	set(jammers, pos.z,pos.y,pos.x, true)
+	jammers:setAt(pos, true)
 	update_mod_storage()
 end
 
 local function remove_jammer(pos)
-	remove(jammers, pos.z,pos.y,pos.x)
+	jammers:removeAt(pos)
 	update_mod_storage()
 end
 
 local function is_jammed(pos)
 	local JAMMER_MAX_DISTANCE = moremesecons.setting("jammer", "max_distance", 10, 1)
 
-	local pz,py,px = vector.unpack(pos)
-	for z,yxs in pairs(jammers) do
-		if math.abs(pz-z) <= JAMMER_MAX_DISTANCE then
-			for y,xs in pairs(yxs) do
-				if math.abs(py-y) <= JAMMER_MAX_DISTANCE then
-					for x in pairs(xs) do
-						if math.abs(px-x) <= JAMMER_MAX_DISTANCE
-						and (px-x)^2+(py-y)^2+(pz-z)^2 <= JAMMER_MAX_DISTANCE^2 then
-							return true
-						end
-					end
-				end
-			end
+	local minp = vector.subtract(pos, JAMMER_MAX_DISTANCE)
+	local maxp = vector.add(pos, JAMMER_MAX_DISTANCE)
+	for p in jammers:iter(minp, maxp) do
+		local d = vector.subtract(pos, p)
+		if d.x ^ 2 + d.y ^ 2 + d.z ^ 2 <= JAMMER_MAX_DISTANCE^2 then
+			return true
 		end
 	end
 	return false

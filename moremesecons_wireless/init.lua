@@ -458,16 +458,18 @@ if storage:get_string("wireless_meta_2") == "" then
 	minetest.log("action", "[moremesecons_wireless] Migrating mod storage data...")
 	local jammers_1 = minetest.deserialize(storage:get_string("jammers"))
 
-	local get = vector.get_data_from_pos
-	local set = vector.set_data_to_pos
-	local remove = vector.remove_data_from_pos
+	local get = function(t, pos)
+		-- FIXME: this does not test explicitly for false,
+		-- but channel is never false
+		return t[pos.z] and t[pos.z][pos.y] and t[pos.z][pos.y][pos.x]
+	end
 
 	for z, data_z in pairs(wireless_meta_1.owners) do
 	for y, data_y in pairs(data_z) do
 	for x, owner in pairs(data_y) do
 		local pos = {x = x, y = y, z = z}
 		set_owner(pos, owner)
-		set_channel(pos, get(wireless_meta_1.channels, z,y,x))
+		set_channel(pos, get(wireless_meta_1.channels, pos))
 	end
 	end
 	end

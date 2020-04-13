@@ -1,11 +1,11 @@
 # MoreMesecons
 
-Based on Mesecons by Jeija  
-By @paly2 and @HybridDog  
-With the participation of @LeMagnesium (bugfix), @Ataron (textures), @JAPP (texture).  
+Based on Mesecons by Jeija <br/>
+By @paly2 and @HybridDog <br/>
+With the participation of @LeMagnesium (bugfix), @Ataron (textures), @JAPP (texture).
 
-Dependencies: [Mesecons](https://github.com/Jeija/minetest-mod-mesecons/)  
-Optional dependencies: [vector_extras](https://github.com/HybridDog/vector_extras/) [digilines](https://github.com/minetest-mods/digilines)
+Dependencies: [Mesecons](https://github.com/Jeija/minetest-mod-mesecons/) <br/>
+Optional dependencies: [digilines](https://github.com/minetest-mods/digilines)
 
 MoreMesecons is a mod for minetest which adds some mesecons items.
 

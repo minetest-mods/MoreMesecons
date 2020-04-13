@@ -1,19 +1,19 @@
 local storage = minetest.get_mod_storage()
 
 local teleporters = minetest.deserialize(storage:get_string("teleporters")) or {}
-local teleporters_rids = minetest.deserialize(storage:get_string("teleporters_rids")) or {}
-local jammers = minetest.deserialize(storage:get_string("jammers")) or {}
+local teleporters_rids = moremesecons.load_MapDataStorage_legacy(storage,
+	"teleporters_rids_v2", "teleporters_rids")
 
 local function update_mod_storage()
 	storage:set_string("teleporters", minetest.serialize(teleporters))
-	storage:set_string("teleporters_rids", minetest.serialize(teleporters_rids))
+	storage:set_string("teleporters_rids_v2", teleporters_rids:serialize())
 end
 
 
 local function register(pos)
-	if not vector.get_data_from_pos(teleporters_rids, pos.z,pos.y,pos.x) then
+	if not teleporters_rids:getAt(pos) then
 		table.insert(teleporters, pos)
-		vector.set_data_to_pos(teleporters_rids, pos.z,pos.y,pos.x, #teleporters)
+		teleporters_rids:setAt(pos, #teleporters)
 		update_mod_storage()
 	end
 end
@@ -89,10 +89,10 @@ minetest.register_node("moremesecons_teleporter:teleporter", {
 	sounds = default.node_sound_stone_defaults(),
 	on_construct = register,
 	on_destruct = function(pos)
-		local RID = vector.get_data_from_pos(teleporters_rids, pos.z,pos.y,pos.x)
+		local RID = teleporters_rids:getAt(pos)
 		if RID then
 			table.remove(teleporters, RID)
-			vector.remove_data_from_pos(teleporters_rids, pos.z,pos.y,pos.x)
+			teleporters_rids:removeAt(pos)
 			update_mod_storage()
 		end
 	end,
