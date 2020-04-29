@@ -233,7 +233,6 @@ MapDataStorage.__index = {
 		return iterfunc
 	end,
 	serialize = function(self)
-		local serialize_data = minetest.serialize
 		local indices = {}
 		local values = {}
 		local i = 1
@@ -242,12 +241,12 @@ MapDataStorage.__index = {
 			-- Convert the double reversible to a string;
 			-- minetest.serialize does not (yet) do this
 			indices[i] = ("%a"):format(vi)
-			values[i] = serialize_data(v)
+			values[i] = v
 		end
 		result = {
 			version = "MapDataStorage_v1",
 			indices = "return {" .. table.concat(indices, ",") .. "}",
-			values = "return {" .. table.concat(values, ",") .. "}",
+			values = minetest.serialize(values),
 		}
 		return minetest.serialize(result)
 	end,
@@ -260,8 +259,11 @@ MapDataStorage.deserialize = function(txtdata)
 	end
 	-- I assume that minetest.deserialize correctly deserializes the indices,
 	-- which are in the %a format
-	indices = minetest.deserialize(data.indices)
-	values = minetest.deserialize(data.values)
+	local indices = minetest.deserialize(data.indices)
+	local values = minetest.deserialize(data.values)
+	if not indices or not values then
+		return MapDataStorage()
+	end
 	data = MapDataStorage()
 	for i = 1,#indices do
 		local vi = indices[i]
@@ -306,7 +308,7 @@ function moremesecons.load_MapDataStorage_legacy(modstorage, name, oldname)
 		modstorage:set_string(oldname, nil)
 		return t
 	end
-	t = modstorage:get_string("teleporters_rids_v2")
+	t = modstorage:get_string(name)
 	if t and t ~= "" then
 		return MapDataStorage.deserialize(t)
 	end
