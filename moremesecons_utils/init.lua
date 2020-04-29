@@ -240,7 +240,7 @@ MapDataStorage.__index = {
 			local vi = node_position_key(pos)
 			-- Convert the double reversible to a string;
 			-- minetest.serialize does not (yet) do this
-			indices[i] = ("%a"):format(vi)
+			indices[i] = ("%.17g"):format(vi)
 			values[i] = v
 		end
 		result = {
