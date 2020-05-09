@@ -120,31 +120,38 @@ minetest.register_node("moremesecons_luablock:luablock", {
 				minetest.log("warning", "[moremesecons_luablock] Metadata of LuaBlock at pos "..minetest.pos_to_string(npos).." does not match its mod storage data!")
 				return
 			end
-			-- We do absolutely no check there.
-			-- There is no limitation in the number of instruction the LuaBlock can execute
-			-- or the usage it can make of loops.
-			-- It is executed in the global namespace.
-			-- Remember: *The LuaBlock is highly dangerous and should be manipulated cautiously!*
-			local func, err = loadstring(code)
+
+			local env = {}
+			for k, v in pairs(_G) do
+				env[k] = v
+			end
+			env.pos = table.copy(npos)
+			env.mem = minetest.deserialize(meta:get_string("mem")) or {}
+
+			local func, err
+			if _VERSION == "Lua 5.1" then
+				func, err = loadstring(code)
+				if func then
+					setfenv(func, env)
+				end
+			else
+				func, err = load(code, nil, "t", env)
+			end
 			if not func then
 				meta:set_string("errmsg", err)
 				make_formspec(meta, pos)
 				return
 			end
-			-- Set the "pos" global
-			local old_pos
-			if minetest.global_exists("pos") then
-				old_pos = pos -- In case there's already an existing "pos" global
-			end
-			pos = table.copy(npos)
+
 			local good, err = pcall(func)
-			pos = old_pos
 
 			if not good then -- Runtime error
 				meta:set_string("errmsg", err)
 				make_formspec(meta, pos)
 				return
 			end
+
+			meta:set_string("mem", minetest.serialize(env.mem))
 
 			meta:set_string("errmsg", "")
 			make_formspec(meta, pos)
