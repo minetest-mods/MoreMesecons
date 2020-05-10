@@ -25,11 +25,14 @@ local function timegate_activate(pos, node)
 	node.name = "moremesecons_timegate:timegate_on"
 	minetest.swap_node(pos, node)
 	mesecon.receptor_on(pos)
-	minetest.after(time, function(pos, node)
-		mesecon.receptor_off(pos)
-		node.name = "moremesecons_timegate:timegate_off"
-		minetest.swap_node(pos, node)
-	end, pos, node)
+	minetest.after(time, function()
+		local node = minetest.get_node(pos)
+		if node.name == "moremesecons_timegate:timegate_on" then
+			mesecon.receptor_off(pos)
+			node.name = "moremesecons_timegate:timegate_off"
+			minetest.swap_node(pos, node)
+		end
+	end)
 end
 
 boxes = {{ -6/16, -8/16, -6/16, 6/16, -7/16, 6/16 },		-- the main slab
