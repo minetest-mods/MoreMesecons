@@ -63,6 +63,9 @@ moremesecons_teleporter.enable_lbm (Enable Registration LBM) bool false
 
 [Wireless]
 
+# Whether to enable the wireless jammer node
+moremesecons_wireless.enable_jammer (Enable wireless jammer) bool true
+
 # Wireless Jammer action range
 # Any value less than or equal to 0 will be changed to 1 and a NaN value will be changed to the default value
 moremesecons_wireless.jammer_max_distance (Wireless Jammer action range) float 15

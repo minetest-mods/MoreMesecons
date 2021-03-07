@@ -330,6 +330,15 @@ mesecon.register_node("moremesecons_wireless:wireless", {
 
 minetest.register_alias("moremesecons_wireless:wireless", "moremesecons_wireless:wireless_off")
 
+minetest.register_craft({
+	output = "moremesecons_wireless:wireless_off 2",
+	recipe = {
+		{"group:mesecon_conductor_craftable", "", "group:mesecon_conductor_craftable"},
+		{"", "mesecons_torch:mesecon_torch_on", ""},
+		{"group:mesecon_conductor_craftable", "", "group:mesecon_conductor_craftable"},
+	}
+})
+
 local function remove_jammer(pos)
 	moremesecons.remove_data_from_pos(jammers, pos)
 end
@@ -357,83 +366,76 @@ function is_jammed(pos)
 	return false
 end
 
-mesecon.register_node("moremesecons_wireless:jammer", {
-	description = "Wireless Jammer",
-	paramtype = "light",
-	drawtype = "nodebox",
-},{
-	tiles = {"mesecons_wire_off.png^moremesecons_jammer_top.png", "moremesecons_jammer_bottom.png", "mesecons_wire_off.png^moremesecons_jammer_side_off.png"},
-	node_box = {
-		type = "fixed",
-		fixed = {
-			-- connection
-			{-1/16, -0.5, -0.5, 1/16, -7/16, 0.5},
-			{-0.5, -0.5, -1/16, 0.5, -7/16, 1/16},
+if moremesecons.setting("wireless", "enable_jammer", true) then
+	mesecon.register_node("moremesecons_wireless:jammer", {
+		description = "Wireless Jammer",
+		paramtype = "light",
+		drawtype = "nodebox",
+	},{
+		tiles = {"mesecons_wire_off.png^moremesecons_jammer_top.png", "moremesecons_jammer_bottom.png", "mesecons_wire_off.png^moremesecons_jammer_side_off.png"},
+		node_box = {
+			type = "fixed",
+			fixed = {
+				-- connection
+				{-1/16, -0.5, -0.5, 1/16, -7/16, 0.5},
+				{-0.5, -0.5, -1/16, 0.5, -7/16, 1/16},
 
-			--stabilization
-			{-1/16, -7/16, -1/16, 1/16, -6/16, 1/16},
+				--stabilization
+				{-1/16, -7/16, -1/16, 1/16, -6/16, 1/16},
 
-			-- fields
-			{-7/16, -6/16, -7/16, 7/16, -4/16, 7/16},
-			{-5/16, -4/16, -5/16, 5/16, -3/16, 5/16},
-			{-3/16, -3/16, -3/16, 3/16, -2/16, 3/16},
-			{-1/16, -2/16, -1/16, 1/16, -1/16, 1/16},
+				-- fields
+				{-7/16, -6/16, -7/16, 7/16, -4/16, 7/16},
+				{-5/16, -4/16, -5/16, 5/16, -3/16, 5/16},
+				{-3/16, -3/16, -3/16, 3/16, -2/16, 3/16},
+				{-1/16, -2/16, -1/16, 1/16, -1/16, 1/16},
+			},
 		},
-	},
-	groups = {dig_immediate=2},
-	mesecons = {effector = {
-		rules = mesecon.rules.flat,
-		action_on = function(pos)
-			add_jammer(pos)
-			minetest.swap_node(pos, {name="moremesecons_wireless:jammer_on"})
-		end
-	}}
-},{
-	tiles = {"mesecons_wire_on.png^moremesecons_jammer_top.png", "moremesecons_jammer_bottom.png", "mesecons_wire_on.png^moremesecons_jammer_side_on.png"},
-	node_box = {
-		type = "fixed",
-		fixed = {
-			-- connection
-			{-1/16, -0.5, -0.5, 1/16, -7/16, 0.5},
-			{-0.5, -0.5, -1/16, 0.5, -7/16, 1/16},
+		groups = {dig_immediate=2},
+		mesecons = {effector = {
+			rules = mesecon.rules.flat,
+			action_on = function(pos)
+				add_jammer(pos)
+				minetest.swap_node(pos, {name="moremesecons_wireless:jammer_on"})
+			end
+		}}
+	},{
+		tiles = {"mesecons_wire_on.png^moremesecons_jammer_top.png", "moremesecons_jammer_bottom.png", "mesecons_wire_on.png^moremesecons_jammer_side_on.png"},
+		node_box = {
+			type = "fixed",
+			fixed = {
+				-- connection
+				{-1/16, -0.5, -0.5, 1/16, -7/16, 0.5},
+				{-0.5, -0.5, -1/16, 0.5, -7/16, 1/16},
 
-			--stabilization
-			{-1/16, -7/16, -1/16, 1/16, 5/16, 1/16},
+				--stabilization
+				{-1/16, -7/16, -1/16, 1/16, 5/16, 1/16},
 
-			-- fields
-			{-7/16, -6/16, -7/16, 7/16, -4/16, 7/16},
-			{-5/16, -3/16, -5/16, 5/16, -1/16, 5/16},
-			{-3/16, 0, -3/16, 3/16, 2/16, 3/16},
-			{-1/16, 3/16, -1/16, 1/16, 5/16, 1/16},
+				-- fields
+				{-7/16, -6/16, -7/16, 7/16, -4/16, 7/16},
+				{-5/16, -3/16, -5/16, 5/16, -1/16, 5/16},
+				{-3/16, 0, -3/16, 3/16, 2/16, 3/16},
+				{-1/16, 3/16, -1/16, 1/16, 5/16, 1/16},
+			},
 		},
-	},
-	groups = {dig_immediate=2, not_in_creative_inventory=1},
-	mesecons = {effector = {
-		rules = mesecon.rules.flat,
-		action_off = function(pos)
-			remove_jammer(pos)
-			minetest.swap_node(pos, {name="moremesecons_wireless:jammer_off"})
-		end
-	}},
-	on_destruct = remove_jammer,
-	on_construct = add_jammer,
-})
+		groups = {dig_immediate=2, not_in_creative_inventory=1},
+		mesecons = {effector = {
+			rules = mesecon.rules.flat,
+			action_off = function(pos)
+				remove_jammer(pos)
+				minetest.swap_node(pos, {name="moremesecons_wireless:jammer_off"})
+			end
+		}},
+		on_destruct = remove_jammer,
+		on_construct = add_jammer,
+	})
 
-minetest.register_craft({
-	output = "moremesecons_wireless:jammer_off",
-	recipe = {
-		{"moremesecons_wireless:wireless", "mesecons_torch:mesecon_torch_on", "moremesecons_wireless:wireless"}
-	}
-})
-
-minetest.register_craft({
-	output = "moremesecons_wireless:wireless_off 2",
-	recipe = {
-		{"group:mesecon_conductor_craftable", "", "group:mesecon_conductor_craftable"},
-		{"", "mesecons_torch:mesecon_torch_on", ""},
-		{"group:mesecon_conductor_craftable", "", "group:mesecon_conductor_craftable"},
-	}
-})
+	minetest.register_craft({
+		output = "moremesecons_wireless:jammer_off",
+		recipe = {
+			{"moremesecons_wireless:wireless", "mesecons_torch:mesecon_torch_on", "moremesecons_wireless:wireless"}
+		}
+	})
+end
 
 if moremesecons.setting("wireless", "enable_lbm", false) then
 	minetest.register_lbm({
