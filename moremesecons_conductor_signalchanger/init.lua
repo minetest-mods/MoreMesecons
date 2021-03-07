@@ -5,7 +5,7 @@ local nodebox = {
 
 local function signalchanger_get_output_rules(node)
 	local rules = {{x=-1, y=0, z=0}}
-	for i = 0, node.param2 do
+	for _ = 0, node.param2 do
 		rules = mesecon.rotate_rules_left(rules)
 	end
 	return rules
@@ -13,7 +13,7 @@ end
 
 local function signalchanger_get_input_rules(node)
 	local rules = {{x=0, y=0, z=-1, name="input_on"}, {x=0, y=0, z=1, name="input_off"}, {x=1, y=0, z=0, name="input_signal"}}
-	for i = 0, node.param2 do
+	for _ = 0, node.param2 do
 		rules = mesecon.rotate_rules_left(rules)
 	end
 	return rules

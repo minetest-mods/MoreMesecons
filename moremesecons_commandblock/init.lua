@@ -55,7 +55,7 @@ local function resolve_commands(commands, pos)
 	local nearest = nil
 	local min_distance = math.huge
 	local players = minetest.get_connected_players()
-	for index, player in pairs(players) do
+	for _, player in pairs(players) do
 		local distance = vector.distance(pos, player:getpos())
 		if distance < min_distance then
 			min_distance = distance

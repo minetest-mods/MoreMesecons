@@ -339,14 +339,14 @@ local function do_test()
 		end
 	end
 	local i = 0
-	for pos, v in data:iter({x=-4, y=-4, z=-4}, {x=2, y=2, z=2}) do
+	for pos in data:iter({x=-4, y=-4, z=-4}, {x=2, y=2, z=2}) do
 		i = i + 1
 		assert(vector.equals(pos, expected_positions[i]))
 	end
 
 	print("Test if iter works correctly on a corner")
 	local found = false
-	for pos, v in data:iter({x=-8, y=-7, z=-80}, {x=-5, y=-5, z=-5}) do
+	for pos in data:iter({x=-8, y=-7, z=-80}, {x=-5, y=-5, z=-5}) do
 		assert(not found)
 		found = true
 		assert(vector.equals(pos, {x=-5, y=-5, z=-5}))
