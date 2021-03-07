@@ -2,7 +2,7 @@ local function mesechest_get_output_rules(node)
 	local rules = {{x=-1, y=0, z=0},
 			{x=0, y=0, z=-1},
 			{x=0, y=0, z=1}}
-	for i = 0, node.param2 do
+	for _ = 0, node.param2 do
 		rules = mesecon.rotate_rules_left(rules)
 	end
 	return rules

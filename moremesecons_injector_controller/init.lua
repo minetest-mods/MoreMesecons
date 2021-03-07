@@ -1,6 +1,6 @@
 local injector_controller_get_output_rules = function(node)
 	local rules = {{x = 0, y = 0, z = 1}}
-	for i = 0, node.param2 do
+	for _ = 0, node.param2 do
 		rules = mesecon.rotate_rules_left(rules)
 	end
 	return rules
@@ -10,7 +10,7 @@ local injector_controller_get_input_rules = function(node)
 	local rules = {{x = 0, y = 0, z = -1},
 			{x = 1, y = 0, z = 0},
 			{x = -1, y = 0, z = 0}}
-	for i = 0, node.param2 do
+	for _ = 0, node.param2 do
 		rules = mesecon.rotate_rules_left(rules)
 	end
 	return rules

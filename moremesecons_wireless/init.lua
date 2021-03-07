@@ -188,7 +188,7 @@ end
 
 function activate_network(owner, channel)
 	local network = wireless[owner][channel]
-	for i, wl_pos in pairs(network.members) do
+	for _, wl_pos in pairs(network.members) do
 		wireless_receptor_on(wl_pos, id, network)
 	end
 end

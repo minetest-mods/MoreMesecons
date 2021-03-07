@@ -4,7 +4,7 @@ local kill_nearest_player = function(pos)
 	-- Search the nearest player
 	local nearest
 	local min_distance = MAX_DISTANCE
-	for index, player in pairs(minetest.get_connected_players()) do
+	for _, player in pairs(minetest.get_connected_players()) do
 		local distance = vector.distance(pos, player:getpos())
 		if distance < min_distance then
 			min_distance = distance

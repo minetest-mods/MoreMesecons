@@ -26,7 +26,7 @@ local function teleport_nearest(pos)
 	local nearest = nil
 	local min_distance = MAX_PLAYER_DISTANCE
 	local players = minetest.get_connected_players()
-	for index, player in pairs(players) do
+	for _, player in pairs(players) do
 		local distance = vector.distance(pos, player:getpos())
 		if distance <= min_distance then
 			min_distance = distance
