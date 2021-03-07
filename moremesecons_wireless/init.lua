@@ -264,11 +264,14 @@ local function on_digiline_receive(pos, node, channel, msg)
 		return
 	end
 
-	for i, wl_pos in pairs(wireless[wls.owner][wls.channel].members) do
-		if i ~= wls.id and check_wireless_exists(wl_pos) then
-			digiline:receptor_send(wl_pos, digiline.rules.default, channel, msg)
+	-- Why is delaying required? https://github.com/minetest-mods/MoreMesecons/issues/16
+	minetest.after(0, function()
+		for i, wl_pos in pairs(wireless[wls.owner][wls.channel].members) do
+			if i ~= wls.id and check_wireless_exists(wl_pos) then
+				digiline:receptor_send(wl_pos, digiline.rules.default, channel, msg)
+			end
 		end
-	end
+	end)
 end
 
 mesecon.register_node("moremesecons_wireless:wireless", {
