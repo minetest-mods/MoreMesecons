@@ -253,6 +253,9 @@ function wireless_effector_off(pos)
 	update_mod_storage()
 end
 
+-- This table is required to prevent a message from being sent in loop between wireless nodes
+local sending_digilines = {}
+
 local function on_digiline_receive(pos, node, channel, msg)
 	if is_jammed(pos) then
 		return
@@ -264,14 +267,18 @@ local function on_digiline_receive(pos, node, channel, msg)
 		return
 	end
 
-	-- Why is delaying required? https://github.com/minetest-mods/MoreMesecons/issues/16
-	minetest.after(0, function()
-		for i, wl_pos in pairs(wireless[wls.owner][wls.channel].members) do
-			if i ~= wls.id and check_wireless_exists(wl_pos) then
-				digiline:receptor_send(wl_pos, digiline.rules.default, channel, msg)
-			end
+	local pos_hash = minetest.hash_node_position(pos)
+	if sending_digilines[pos_hash] then
+		return
+	end
+
+	sending_digilines[pos_hash] = true
+	for i, wl_pos in pairs(wireless[wls.owner][wls.channel].members) do
+		if i ~= wls.id and check_wireless_exists(wl_pos) then
+			digiline:receptor_send(wl_pos, digiline.rules.default, channel, msg)
 		end
-	end)
+	end
+	sending_digilines[pos_hash] = nil
 end
 
 mesecon.register_node("moremesecons_wireless:wireless", {
