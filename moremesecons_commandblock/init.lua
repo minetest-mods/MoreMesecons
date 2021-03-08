@@ -62,7 +62,7 @@ local function resolve_commands(commands, pos)
 			nearest = player:get_player_name()
 		end
 	end
-	new_commands = commands:gsub("@nearest", nearest)
+	local new_commands = commands:gsub("@nearest", nearest)
 	return new_commands, min_distance, new_commands ~= commands
 end
 

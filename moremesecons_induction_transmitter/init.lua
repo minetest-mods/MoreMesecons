@@ -18,10 +18,6 @@ local function induction_transmitter_get_output_rules(node)
 	return {vector.multiply(minetest.facedir_to_dir(node.param2), 2)}
 end
 
-local function induction_transmitter_get_virtual_output_rules(node)
-	return {minetest.facedir_to_dir(node.param2)}
-end
-
 local function act(pos, node, state)
 	minetest.swap_node(pos, {name = "moremesecons_induction_transmitter:induction_transmitter_"..state, param2 = node.param2})
 

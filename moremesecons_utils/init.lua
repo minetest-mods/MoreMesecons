@@ -243,12 +243,11 @@ MapDataStorage.__index = {
 			indices[i] = ("%.17g"):format(vi)
 			values[i] = v
 		end
-		result = {
+		return minetest.serialize({
 			version = "MapDataStorage_v1",
 			indices = "return {" .. table.concat(indices, ",") .. "}",
 			values = minetest.serialize(values),
-		}
-		return minetest.serialize(result)
+		})
 	end,
 }
 MapDataStorage.deserialize = function(txtdata)
@@ -317,6 +316,7 @@ end
 
 
 
+--[[
 -- This testing code shows an example usage of the MapDataStorage code
 local function do_test()
 	print("Test if iter returns correct positions when a lot is set")
@@ -377,5 +377,5 @@ local function do_test()
 
 	--~ data:iterAll()
 end
---~ do_test()
-
+do_test()
+--]]

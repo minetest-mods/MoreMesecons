@@ -17,19 +17,19 @@ end
 local dual_delayer_activate = function(pos, node)
 	mesecon.receptor_on(pos, {dual_delayer_get_output_rules(node)[1]}) -- Turn on the port 1
 	minetest.swap_node(pos, {name = "moremesecons_dual_delayer:dual_delayer_10", param2 = node.param2})
-	minetest.after(0.4, function(pos, node)
+	minetest.after(0.4, function()
 		mesecon.receptor_on(pos, {dual_delayer_get_output_rules(node)[2]}) -- Turn on the port 2
 		minetest.swap_node(pos, {name = "moremesecons_dual_delayer:dual_delayer_11", param2 = node.param2})
-	end, pos, node)
+	end)
 end
 
 local dual_delayer_deactivate = function(pos, node, link)
 	mesecon.receptor_off(pos, {dual_delayer_get_output_rules(node)[2]}) -- Turn off the port 2
 	minetest.swap_node(pos, {name = "moremesecons_dual_delayer:dual_delayer_10", param2 = node.param2})
-	minetest.after(0.4, function(pos, node)
+	minetest.after(0.4, function()
 		mesecon.receptor_off(pos, {dual_delayer_get_output_rules(node)[1]}) -- Turn off the port 1
 		minetest.swap_node(pos, {name = "moremesecons_dual_delayer:dual_delayer_00", param2 = node.param2})
-	end, pos, node)
+	end)
 end
 
 

@@ -76,14 +76,17 @@ end]]
 local file_path = minetest.get_worldpath().."/MoreMesecons_lctt"
 
 -- load templates from a compressed file
-local templates_file = io.open(file_path, "rb")
-if templates_file then
-	local templates_raw = templates_file:read("*all")
-	io.close(templates_file)
-	if templates_raw
-	and templates_raw ~= "" then
-		for name,t in pairs(minetest.deserialize(minetest.decompress(templates_raw))) do
-			templates[name] = t
+do
+	local templates_file = io.open(file_path, "rb")
+	if templates_file then
+		local templates_raw = templates_file:read("*all")
+		io.close(templates_file)
+		if templates_raw
+		and templates_raw ~= "" then
+			local data = minetest.deserialize(minetest.decompress(templates_raw))
+			for name,t in pairs(data) do
+				templates[name] = t
+			end
 		end
 	end
 end

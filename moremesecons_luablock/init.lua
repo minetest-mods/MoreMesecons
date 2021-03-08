@@ -128,33 +128,33 @@ minetest.register_node("moremesecons_luablock:luablock", {
 			env.pos = table.copy(npos)
 			env.mem = minetest.deserialize(meta:get_string("mem")) or {}
 
-			local func, err
+			local func, err_syntax
 			if _VERSION == "Lua 5.1" then
-				func, err = loadstring(code)
+				func, err_syntax = loadstring(code)
 				if func then
 					setfenv(func, env)
 				end
 			else
-				func, err = load(code, nil, "t", env)
+				func, err_syntax = load(code, nil, "t", env)
 			end
 			if not func then
-				meta:set_string("errmsg", err)
-				make_formspec(meta, pos)
+				meta:set_string("errmsg", err_syntax)
+				make_formspec(meta, npos)
 				return
 			end
 
-			local good, err = pcall(func)
+			local good, err_runtime = pcall(func)
 
-			if not good then -- Runtime error
-				meta:set_string("errmsg", err)
-				make_formspec(meta, pos)
+			if not good then
+				meta:set_string("errmsg", err_runtime)
+				make_formspec(meta, npos)
 				return
 			end
 
 			meta:set_string("mem", minetest.serialize(env.mem))
 
 			meta:set_string("errmsg", "")
-			make_formspec(meta, pos)
+			make_formspec(meta, npos)
 		end
 	}}
 })
