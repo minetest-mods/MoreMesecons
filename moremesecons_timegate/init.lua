@@ -35,7 +35,7 @@ local function timegate_activate(pos, node)
 	end)
 end
 
-boxes = {{ -6/16, -8/16, -6/16, 6/16, -7/16, 6/16 },		-- the main slab
+local boxes = {{ -6/16, -8/16, -6/16, 6/16, -7/16, 6/16 },		-- the main slab
 
 	 { -2/16, -7/16, -4/16, 2/16, -26/64, -3/16 },		-- the jeweled "on" indicator
 	 { -3/16, -7/16, -3/16, 3/16, -26/64, -2/16 },

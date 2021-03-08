@@ -186,10 +186,10 @@ function wireless_receptor_off(pos, id, network, check)
 	end
 end
 
-function activate_network(owner, channel)
+local function activate_network(owner, channel)
 	local network = wireless[owner][channel]
-	for _, wl_pos in pairs(network.members) do
-		wireless_receptor_on(wl_pos, id, network)
+	for i, wl_pos in pairs(network.members) do
+		wireless_receptor_on(wl_pos, i, network)
 	end
 end
 
@@ -300,7 +300,6 @@ mesecon.register_node("moremesecons_wireless:wireless", {
 		mesecon.receptor_off(pos)
 	end,
 	after_place_node = function(pos, placer)
-		local placername = placer:get_player_name()
 		set_owner(pos, placer:get_player_name())
 	end,
 	on_receive_fields = function(pos, _, fields, player)

@@ -80,7 +80,7 @@ minetest.register_node("moremesecons_switchtorch:switchtorch_on", {
 	selection_box = torch_selectionbox,
 	groups = {dig_immediate=3, not_in_creative_inventory = 1},
 	drop = "moremesecons_switchtorch:switchtorch_off",
-	light_source = LIGHT_MAX-5,
+	light_source = 9,
 	mesecons = {receptor = {
 		state = mesecon.state.on,
 		rules = torch_get_output_rules
