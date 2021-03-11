@@ -74,6 +74,7 @@ for n,i in pairs({{0,0},{1,0},{1,1}}) do
 		},
 		groups = groups,
 		tiles = {top_texture, "moremesecons_dual_delayer_bottom.png", "moremesecons_dual_delayer_side_left.png", "moremesecons_dual_delayer_side_right.png", "moremesecons_dual_delayer_ends.png", "moremesecons_dual_delayer_ends.png"},
+		use_texture_alpha = "opaque",
 		mesecons = {
 			receptor = {
 				state = mesecon.state.off,

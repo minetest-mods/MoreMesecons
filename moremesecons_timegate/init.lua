@@ -84,6 +84,7 @@ mesecon.register_node("moremesecons_timegate:timegate", {
 			"moremesecons_timegate_sides_off.png",
 			"moremesecons_timegate_sides_off.png"
 		},
+		use_texture_alpha = "opaque",
 		groups = {bendy=2,snappy=1,dig_immediate=2},
 		mesecons = {
 			receptor =
@@ -106,6 +107,7 @@ mesecon.register_node("moremesecons_timegate:timegate", {
 			"moremesecons_timegate_sides_on.png",
 			"moremesecons_timegate_sides_on.png"
 		},
+		use_texture_alpha = "opaque",
 		groups = {bendy=2,snappy=1,dig_immediate=2, not_in_creative_inventory=1},
 		mesecons = {
 			receptor = {
