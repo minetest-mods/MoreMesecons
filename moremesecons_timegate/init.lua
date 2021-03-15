@@ -47,6 +47,10 @@ local boxes = {{ -6/16, -8/16, -6/16, 6/16, -7/16, 6/16 },		-- the main slab
 	 { -8/16, -8/16, -1/16, -6/16, -7/16, 1/16 },		-- the two wire stubs
 	 { 6/16, -8/16, -1/16, 8/16, -7/16, 1/16 }}
 
+local use_texture_alpha
+if minetest.features.use_texture_alpha_string_modes then
+	use_texture_alpha = "opaque"
+end
 mesecon.register_node("moremesecons_timegate:timegate", {
 	description = "Time Gate",
 	drawtype = "nodebox",
@@ -84,7 +88,7 @@ mesecon.register_node("moremesecons_timegate:timegate", {
 			"moremesecons_timegate_sides_off.png",
 			"moremesecons_timegate_sides_off.png"
 		},
-		use_texture_alpha = "opaque",
+		use_texture_alpha = use_texture_alpha,
 		groups = {bendy=2,snappy=1,dig_immediate=2},
 		mesecons = {
 			receptor =
@@ -107,7 +111,7 @@ mesecon.register_node("moremesecons_timegate:timegate", {
 			"moremesecons_timegate_sides_on.png",
 			"moremesecons_timegate_sides_on.png"
 		},
-		use_texture_alpha = "opaque",
+		use_texture_alpha = use_texture_alpha,
 		groups = {bendy=2,snappy=1,dig_immediate=2, not_in_creative_inventory=1},
 		mesecons = {
 			receptor = {

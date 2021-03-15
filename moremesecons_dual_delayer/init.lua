@@ -58,6 +58,10 @@ for n,i in pairs({{0,0},{1,0},{1,1}}) do
 		top_texture = pre..top_texture
 	end
 
+	local use_texture_alpha
+	if minetest.features.use_texture_alpha_string_modes then
+		use_texture_alpha = "opaque"
+	end
 	minetest.register_node("moremesecons_dual_delayer:dual_delayer_"..i1 ..i2, {
 		description = "Dual Delayer",
 		drop = "moremesecons_dual_delayer:dual_delayer_00",
@@ -74,7 +78,7 @@ for n,i in pairs({{0,0},{1,0},{1,1}}) do
 		},
 		groups = groups,
 		tiles = {top_texture, "moremesecons_dual_delayer_bottom.png", "moremesecons_dual_delayer_side_left.png", "moremesecons_dual_delayer_side_right.png", "moremesecons_dual_delayer_ends.png", "moremesecons_dual_delayer_ends.png"},
-		use_texture_alpha = "opaque",
+		use_texture_alpha = use_texture_alpha,
 		mesecons = {
 			receptor = {
 				state = mesecon.state.off,
