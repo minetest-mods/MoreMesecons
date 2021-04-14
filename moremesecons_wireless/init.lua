@@ -262,6 +262,9 @@ local function on_digiline_receive(pos, node, channel, msg)
 	end
 
 	local wls = moremesecons.get_data_from_pos(wireless_meta, pos)
+	if not wls then
+		return
+	end
 
 	if wls.owner == "" or not wireless[wls.owner] or channel == "" or not wireless[wls.owner][wls.channel] then
 		return
@@ -274,7 +277,7 @@ local function on_digiline_receive(pos, node, channel, msg)
 
 	sending_digilines[pos_hash] = true
 	for i, wl_pos in pairs(wireless[wls.owner][wls.channel].members) do
-		if i ~= wls.id and check_wireless_exists(wl_pos) then
+		if i ~= wls.id then
 			digiline:receptor_send(wl_pos, digiline.rules.default, channel, msg)
 		end
 	end
