@@ -61,7 +61,7 @@ for i, f in ipairs(minetest.registered_on_player_receive_fields) do
 	end
 end
 
-default.register_chest("mesechest", {
+default.chest.register_chest("moremesecons_mesechest:mesechest", {
 	description = "Mese Chest",
 	tiles = {
 		"default_chest_top.png^[colorize:#d8e002:70",
@@ -82,7 +82,7 @@ default.register_chest("mesechest", {
 	}
 })
 
-default.register_chest("mesechest_locked", {
+default.chest.register_chest("moremesecons_mesechest:mesechest_locked", {
 	description = "Locked Mese Chest",
 	tiles = {
 		"default_chest_top.png^[colorize:#d8e002:70",
@@ -108,11 +108,17 @@ minetest.register_node = old_minetest_register_node
 minetest.register_lbm = old_minetest_register_lbm
 
 minetest.register_craft({
-	output = "default:mesechest",
+	output = "moremesecons_mesechest:mesechest",
 	recipe = {{"group:mesecon_conductor_craftable", "default:chest", "group:mesecon_conductor_craftable"}}
 })
 
 minetest.register_craft({
-	output = "default:mesechest_locked",
+	output = "moremesecons_mesechest:mesechest_locked",
 	recipe = {{"group:mesecon_conductor_craftable", "default:chest_locked", "group:mesecon_conductor_craftable"}}
 })
+
+-- Legacy
+minetest.register_alias("default:mesechest", "moremesecons_mesechest:mesechest")
+minetest.register_alias("mesechest", "moremesecons_mesechest:mesechest")
+minetest.register_alias("default:mesechest_locked", "moremesecons_mesechest:mesechest")
+minetest.register_alias("mesechest_locked", "moremesecons_mesechest:mesechest_locked")
