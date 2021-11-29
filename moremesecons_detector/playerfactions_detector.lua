@@ -44,11 +44,20 @@ local function playerfactions_detector_scan(pos)
 	-- abort if no scan results were found
 	if next(objs) == nil then return false end
 
+	local scan_for = {}
+	for _, str in pairs(string.split(scanname:gsub(" ", ""), ",")) do
+		scan_for[str] = true
+	end
+
 	for _, obj in pairs(objs) do
 		if obj:is_player() then
-			if factions.player_is_in_faction(scanname, obj:get_player_name()) then
-				return true
+			local accepted = true
+			for fname, _ in pairs(scan_for) do
+				if factions.player_is_in_faction(fname, obj:get_player_name()) ~= true then
+					accepted = false
+				end
 			end
+			if accepted then return true end
 		end
 	end
 
