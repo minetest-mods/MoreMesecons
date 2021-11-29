@@ -28,7 +28,7 @@ local function awards_detector_on_receive_fields(pos, formname, fields, sender)
 	awards_detector_make_formspec(pos)
 end
 
--- returns true if player was found, false if not
+-- returns true if a player was found who unlocked all given awards, false if not
 local function awards_detector_scan(pos)
 	local meta = minetest.get_meta(pos)
 	local scanname = meta:get_string("scanname")
@@ -44,11 +44,11 @@ local function awards_detector_scan(pos)
 	-- abort if no scan results were found
 	if next(objs) == nil then return false end
 
-
 	local scan_for = {}
 	for _, str in pairs(string.split(scanname:gsub(" ", ""), ",")) do
 		scan_for[str] = 0
 	end
+
 --[[
 	for _, obj in pairs(objs) do
 		if obj:is_player() then
@@ -85,7 +85,7 @@ local function awards_detector_scan(pos)
 	return false
 end
 
--- set player name when receiving a digiline signal on a specific channel
+-- set awards to search when receiving a digiline signal on a specific channel
 local awards_detector_digiline = {
 	effector = {
 		action = function(pos, node, channel, msg)

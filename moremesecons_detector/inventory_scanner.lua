@@ -28,7 +28,7 @@ local function inventory_scanner_on_receive_fields(pos, formname, fields, sender
 	inventory_scanner_make_formspec(pos)
 end
 
--- returns true if player was found, false if not
+-- returns true if player was found who has any of the items in their posession, false if not
 local function inventory_scanner_scan(pos)
 	local meta = minetest.get_meta(pos)
 	local scanname = meta:get_string("scanname")
@@ -42,7 +42,6 @@ local function inventory_scanner_scan(pos)
 
 	-- abort if no scan results were found
 	if next(objs) == nil then return false end
-
 
 	local scan_for = {}
 	for _, str in pairs(string.split(scanname:gsub(" ", ""), ",")) do
@@ -71,7 +70,7 @@ local function inventory_scanner_scan(pos)
 	return false
 end
 
--- set player name when receiving a digiline signal on a specific channel
+-- set what to search for, when receiving a digiline signal on a specific channel
 local inventory_scanner_digiline = {
 	effector = {
 		action = function(pos, node, channel, msg)

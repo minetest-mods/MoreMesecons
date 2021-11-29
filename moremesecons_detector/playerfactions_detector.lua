@@ -28,7 +28,7 @@ local function playerfactions_detector_on_receive_fields(pos, formname, fields, 
 	playerfactions_detector_make_formspec(pos)
 end
 
--- returns true if player was found, false if not
+-- returns true if a player was found who is member of all given faction, false if not
 local function playerfactions_detector_scan(pos)
 	local meta = minetest.get_meta(pos)
 	local scanname = meta:get_string("scanname")
@@ -64,7 +64,7 @@ local function playerfactions_detector_scan(pos)
 	return false
 end
 
--- set player name when receiving a digiline signal on a specific channel
+-- set factions to search for, when receiving a digiline signal on a specific channel
 local playerfactions_detector_digiline = {
 	effector = {
 		action = function(pos, node, channel, msg)
