@@ -1,3 +1,0 @@
-mesecons
-mesecons_luacontroller
-moremesecons_utils
