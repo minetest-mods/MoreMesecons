@@ -1,3 +1,0 @@
-mesecons
-moremesecons_utils
-craft_guide?
