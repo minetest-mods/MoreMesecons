@@ -4,7 +4,7 @@
 
 local function make_formspec(meta)
 	meta:set_string("formspec", "size[9,5]" ..
-		"field[0.3,  0;9,2;scanname;Coma-separated list of the names of players to scan for (empty for any):;${scanname}]"..
+		"field[0.3,  0;9,2;scanname;Comma-separated list of the names of players to scan for (empty for any):;${scanname}]"..
 		"field[0.3,1.5;4,2;digiline_channel;Digiline Channel (optional):;${digiline_channel}]"..
 		"field[0.3,3;4,2;radius;Detection radius:;${radius}]"..
 		"button_exit[3.5,3.5;2,3;;Save]")
