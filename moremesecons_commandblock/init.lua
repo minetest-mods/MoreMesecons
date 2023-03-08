@@ -1,7 +1,24 @@
+local function get_commands(meta)
+	local commands = meta:get_string("commands")
+	local max_script_length = tonumber(minetest.settings:get("moremesecons_commandblock.max_script_length")) or 65000
+	if max_script_length > 0 and commands:len() > max_script_length then
+		commands = commands:sub(1, max_script_length)
+	end
+	return commands
+end
+
+local function set_commands(meta, commands)
+	local max_script_length = tonumber(minetest.settings:get("moremesecons_commandblock.max_script_length")) or 65000
+	if max_script_length > 0 and commands:len() > max_script_length then
+		commands = commands:sub(1, max_script_length)
+	end
+	meta:set_string("commands", commands)
+end
+
 local function initialize_data(meta)
 	local NEAREST_MAX_DISTANCE = moremesecons.setting("commandblock", "nearest_max_distance", 8, 1)
 
-	local commands = meta:get_string("commands")
+	local commands = get_commands(meta)
 	meta:set_string("formspec",
 		"invsize[9,5;]" ..
 		"textarea[0.5,0.5;8.5,4;commands;Commands;"..commands.."]" ..
@@ -20,8 +37,7 @@ end
 
 local function construct(pos)
 	local meta = minetest.get_meta(pos)
-
-	meta:set_string("commands", "tell @nearest Commandblock unconfigured")
+	set_commands(meta, "tell @nearest Commandblock unconfigured")
 
 	meta:set_string("owner", "")
 
@@ -46,7 +62,7 @@ local function receive_fields(pos, _, fields, player)
 	and player:get_player_name() ~= owner then
 		return
 	end
-	meta:set_string("commands", fields.commands)
+	set_commands(meta, fields.commands)
 
 	initialize_data(meta)
 end
@@ -56,7 +72,7 @@ local function resolve_commands(commands, pos)
 	local min_distance = math.huge
 	local players = minetest.get_connected_players()
 	for _, player in pairs(players) do
-		local distance = vector.distance(pos, player:getpos())
+		local distance = vector.distance(pos, player:get_pos())
 		if distance < min_distance then
 			min_distance = distance
 			nearest = player:get_player_name()
@@ -89,7 +105,7 @@ local function commandblock_action_on(pos, node)
 		return
 	end
 
-	local commands, distance, nearest_in_commands = resolve_commands(meta:get_string("commands"), pos)
+	local commands, distance, nearest_in_commands = resolve_commands(get_commands(meta), pos)
 	if distance > NEAREST_MAX_DISTANCE and nearest_in_commands then
 		minetest.chat_send_player(owner, "The nearest player is too far to use his name in the commands of a craftable command block.")
 		return
