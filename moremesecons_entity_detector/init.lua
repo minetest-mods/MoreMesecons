@@ -45,17 +45,15 @@ local object_detector_scan = function (pos)
 		radius = math.min(6, max_radius)
 	end
 	for _,obj in pairs(minetest.get_objects_inside_radius(pos, radius)) do
-		if not obj:is_player() then
-			local luaentity = obj:get_luaentity()
+		local luaentity = obj:get_luaentity()
+		if luaentity then
+			if scan_all then
+				return true
+			end
 			local isname = luaentity.name
-			if isname then
-				if scan_all then
+			for _, name in ipairs(scan_names) do
+				if isname == name or (isname == "__builtin:item" and luaentity.itemstring == name) then
 					return true
-				end
-				for _, name in ipairs(scan_names) do
-					if isname == name or (isname == "__builtin:item" and luaentity.itemstring == name) then
-						return true
-					end
 				end
 			end
 		end
