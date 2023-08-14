@@ -26,7 +26,8 @@ local function object_detector_on_receive_fields(pos, _, fields, player)
 	meta:set_string("digiline_channel", fields.digiline_channel)
 	local r = tonumber(fields.radius)
 	if r then
-		meta:set_int("radius", r)
+		local max_radius = moremesecons.setting("entity_detector", "max_radius", 16, 0)
+		meta:set_int("radius", math.min(r, max_radius))
 	end
 end
 
@@ -36,9 +37,12 @@ local object_detector_scan = function (pos)
 	local scanname = meta:get_string("scanname")
 	local scan_all = scanname == ""
 	local scan_names = scanname:split(',')
-	local radius = meta:get_int("radius")
-	if radius == 0 then
-		radius = 6
+	local radius = tonumber(meta:get("radius"))
+	local max_radius = moremesecons.setting("entity_detector", "max_radius", 16, 0)
+	if radius then
+		radius = math.min(radius, max_radius)
+	else
+		radius = math.min(6, max_radius)
 	end
 	for _,obj in pairs(minetest.get_objects_inside_radius(pos, radius)) do
 		if not obj:is_player() then
