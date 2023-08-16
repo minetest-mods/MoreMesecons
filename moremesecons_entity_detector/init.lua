@@ -37,13 +37,8 @@ local object_detector_scan = function (pos)
 	local scanname = meta:get_string("scanname")
 	local scan_all = scanname == ""
 	local scan_names = scanname:split(',')
-	local radius = tonumber(meta:get("radius"))
 	local max_radius = moremesecons.setting("entity_detector", "max_radius", 16, 0)
-	if radius then
-		radius = math.min(radius, max_radius)
-	else
-		radius = math.min(6, max_radius)
-	end
+	local radius = math.min(tonumber(meta:get("radius")) or 6, max_radius)
 	for _,obj in pairs(minetest.get_objects_inside_radius(pos, radius)) do
 		local luaentity = obj:get_luaentity()
 		if luaentity then
