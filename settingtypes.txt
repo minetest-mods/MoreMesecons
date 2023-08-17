@@ -13,6 +13,10 @@ moremesecons_commandblock.authorized_commands (Authorized commands) string tell
 # Any value less than or equal to 0 will be changed to 1 and a NaN value will be changed to the default value
 moremesecons_commandblock.nearest_max_distance (Nearest player maximum distance) float 8
 
+[Entity Detector]
+
+moremesecons_entity_detector.max_radius (Maximum entity detector radius) float 16 0
+
 [Signal Jammer]
 
 # Jammer action range
