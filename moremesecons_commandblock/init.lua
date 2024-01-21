@@ -46,7 +46,7 @@ local function receive_fields(pos, _, fields, player)
 	and player:get_player_name() ~= owner then
 		return
 	end
-	meta:set_string("commands", fields.commands)
+	meta:set_string("commands", minetest.formspec_escape(fields.commands))
 
 	initialize_data(meta)
 end
