@@ -4,7 +4,7 @@ local function initialize_data(meta)
 	local commands = meta:get_string("commands")
 	meta:set_string("formspec",
 		"invsize[9,5;]" ..
-		"textarea[0.5,0.5;8.5,4;commands;Commands;"..commands.."]" ..
+		"textarea[0.5,0.5;8.5,4;commands;Commands;"..minetest.formspec_escape(commands).."]" ..
 		"label[1,3.8;@nearest is replaced by the nearest player name ("..tostring(NEAREST_MAX_DISTANCE).." nodes max for the nearest distance)".."]" ..
 		"button_exit[3.3,4.5;2,1;submit;Submit]")
 	local owner = meta:get_string("owner")
@@ -46,7 +46,7 @@ local function receive_fields(pos, _, fields, player)
 	and player:get_player_name() ~= owner then
 		return
 	end
-	meta:set_string("commands", minetest.formspec_escape(fields.commands))
+	meta:set_string("commands", fields.commands)
 
 	initialize_data(meta)
 end
