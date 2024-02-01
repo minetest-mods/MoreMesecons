@@ -1,3 +1,5 @@
+local strip_color_codes = minetest.settings:get_bool("strip_color_codes", false)
+
 local function initialize_data(meta)
 	local NEAREST_MAX_DISTANCE = moremesecons.setting("commandblock", "nearest_max_distance", 8, 1)
 
@@ -46,7 +48,11 @@ local function receive_fields(pos, _, fields, player)
 	and player:get_player_name() ~= owner then
 		return
 	end
-	meta:set_string("commands", fields.commands)
+	if strip_color_codes then
+		meta:set_string("commands", minetest.strip_colors(fields.commands))
+	else
+		meta:set_string("commands", fields.commands)
+	end
 
 	initialize_data(meta)
 end
