@@ -91,7 +91,9 @@ local old_lid_close = default.chest.chest_lid_close
 function default.chest.chest_lid_close(pn)
 	local pos = default.chest.open_chests[pn].pos
 	-- old_lid_close will return true if the chest won't be closed
-	if not old_lid_close(pn) then
+	if old_lid_close(pn) then
+		return true
+	else
 		local node = minetest.get_node(pos)
 		if node.name == "moremesecons_mesechest:mesechest_open" or
 				node.name == "moremesecons_mesechest:mesechest_locked_open" then
