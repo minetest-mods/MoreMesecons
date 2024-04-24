@@ -95,8 +95,10 @@ function default.chest.chest_lid_close(pn)
 		return true
 	else
 		local node = minetest.get_node(pos)
-		if node.name == "moremesecons_mesechest:mesechest_open" or
-				node.name == "moremesecons_mesechest:mesechest_locked_open" then
+		if node.name == "moremesecons_mesechest:mesechest" or
+				node.name == "moremesecons_mesechest:mesechest_open" or
+				node.name == "moremesecons_mesechest:mesechest_locked" or
+				node.name == "moremesecons_mesechest:mesechest_locked_open"then
 			mesecon.receptor_off(pos, {mesechest_get_output_rules(node)[1]})
 		end
 	end
