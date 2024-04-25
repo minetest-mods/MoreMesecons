@@ -53,6 +53,8 @@ default.chest.register_chest("moremesecons_mesechest:mesechest_locked", {
 	}
 })
 
+local moremesecons_chests = {}
+
 for _, chest in ipairs({"moremesecons_mesechest:mesechest", "moremesecons_mesechest:mesechest_locked",
 						"moremesecons_mesechest:mesechest_open", "moremesecons_mesechest:mesechest_locked_open"}) do
 	local old_def = minetest.registered_nodes[chest]
@@ -83,6 +85,7 @@ for _, chest in ipairs({"moremesecons_mesechest:mesechest", "moremesecons_mesech
 	end
 
 	minetest.override_item(chest, override)
+	moremesecons_chests[chest] = true
 end
 
 -- if the chest is getting closed, turn the signal off
@@ -93,14 +96,10 @@ function default.chest.chest_lid_close(pn)
 	-- old_lid_close will return true if the chest won't be closed
 	if old_lid_close(pn) then
 		return true
-	else
-		local node = minetest.get_node(pos)
-		if node.name == "moremesecons_mesechest:mesechest" or
-				node.name == "moremesecons_mesechest:mesechest_open" or
-				node.name == "moremesecons_mesechest:mesechest_locked" or
-				node.name == "moremesecons_mesechest:mesechest_locked_open"then
-			mesecon.receptor_off(pos, {mesechest_get_output_rules(node)[1]})
-		end
+	end
+	local node = minetest.get_node(pos)
+	if moremesecons_chests[node.name] then
+		mesecon.receptor_off(pos, {mesechest_get_output_rules(node)[1]})
 	end
 end
 
