@@ -62,7 +62,7 @@ local object_detector_digiline = {
 		action = function (pos, node, channel, msg)
 			local meta = minetest.get_meta(pos)
 			local active_channel = meta:get_string("digiline_channel")
-			if channel ~= active_channel then
+			if channel ~= active_channel or type(msg) ~= "string" then
 				return
 			end
 			meta:set_string("scanname", msg)

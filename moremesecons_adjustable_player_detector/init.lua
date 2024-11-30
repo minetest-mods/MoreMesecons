@@ -76,7 +76,7 @@ local object_detector_digiline = {
 						make_formspec(meta)
 					end
 				end
-				if msg.scanname then
+				if msg.scanname and type(msg.scanname) == "string" then
 					meta:set_string("scanname", msg.scanname)
 					make_formspec(meta)
 				end
