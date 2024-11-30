@@ -3,6 +3,10 @@
 # Minimal interval authorized. Any lower will be set to it.
 moremesecons_adjustable_blinky_plant.min_interval (Minimum Interval) float 0.5
 
+[Adjustable Player Detector]
+
+moremesecons_adjustable_player_detector.max_radius (Maximum adjustable player detector radius) float 16 0
+
 [Craftable Commandblock]
 
 # Space-separated list of authorized commands
