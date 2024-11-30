@@ -36,7 +36,8 @@ local object_detector_scan = function (pos)
 	local scanname = meta:get_string("scanname")
 	local scan_all = scanname == ""
 	local scan_names = scanname:split(',')
-	local radius = meta:get_int("radius")
+	local max_radius = moremesecons.setting("adjustable_player_detector", "max_radius", 16, 0)
+	local radius = math.min(meta:get_int("radius"), max_radius)
 	if radius <= 0 then
 		radius = 6
 	end
