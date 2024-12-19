@@ -2,6 +2,8 @@
 -- Detects players in a certain radius
 -- The radius can be changes by right-click (by default 6)
 
+local MAX_RADIUS = moremesecons.setting("adjustable_player_detector", "max_radius", 16, 0)
+
 local function make_formspec(meta)
 	meta:set_string("formspec", "size[9,5]" ..
 		"field[0.3,  0;9,2;scanname;Comma-separated list of the names of players to scan for (empty for any):;${scanname}]"..
@@ -36,7 +38,7 @@ local object_detector_scan = function (pos)
 	local scanname = meta:get_string("scanname")
 	local scan_all = scanname == ""
 	local scan_names = scanname:split(',')
-	local radius = meta:get_int("radius")
+	local radius = math.min(meta:get_int("radius"), MAX_RADIUS)
 	if radius <= 0 then
 		radius = 6
 	end
@@ -76,11 +78,11 @@ local object_detector_digiline = {
 						make_formspec(meta)
 					end
 				end
-				if msg.scanname then
+				if type(msg.scanname) == "string" then
 					meta:set_string("scanname", msg.scanname)
 					make_formspec(meta)
 				end
-				if msg.command and msg.command == "get" then
+				if msg.command == "get" then
 					local found, name = object_detector_scan(pos)
 					if not found then
 						name = ""

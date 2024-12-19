@@ -2,6 +2,8 @@
 -- Detects entitys in a certain radius
 -- The radius can be changes by right-click (by default 6)
 
+local MAX_RADIUS = moremesecons.setting("entity_detector", "max_radius", 16, 0)
+
 local function make_formspec(meta)
 	meta:set_string("formspec", "size[9,5]" ..
 		"field[0.3,  0;9,2;scanname;Comma-separated list of the names (itemstring) of entities to scan for (empty for any):;${scanname}]"..
@@ -26,8 +28,7 @@ local function object_detector_on_receive_fields(pos, _, fields, player)
 	meta:set_string("digiline_channel", fields.digiline_channel)
 	local r = tonumber(fields.radius)
 	if r then
-		local max_radius = moremesecons.setting("entity_detector", "max_radius", 16, 0)
-		meta:set_int("radius", math.min(r, max_radius))
+		meta:set_int("radius", math.min(r, MAX_RADIUS))
 	end
 end
 
@@ -37,8 +38,7 @@ local object_detector_scan = function (pos)
 	local scanname = meta:get_string("scanname")
 	local scan_all = scanname == ""
 	local scan_names = scanname:split(',')
-	local max_radius = moremesecons.setting("entity_detector", "max_radius", 16, 0)
-	local radius = math.min(tonumber(meta:get("radius")) or 6, max_radius)
+	local radius = math.min(tonumber(meta:get("radius")) or 6, MAX_RADIUS)
 	for _,obj in pairs(minetest.get_objects_inside_radius(pos, radius)) do
 		local luaentity = obj:get_luaentity()
 		if luaentity then
@@ -62,7 +62,7 @@ local object_detector_digiline = {
 		action = function (pos, node, channel, msg)
 			local meta = minetest.get_meta(pos)
 			local active_channel = meta:get_string("digiline_channel")
-			if channel ~= active_channel then
+			if channel ~= active_channel or type(msg) ~= "string" then
 				return
 			end
 			meta:set_string("scanname", msg)
