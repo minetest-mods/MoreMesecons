@@ -69,6 +69,11 @@ moremesecons_teleporter.max_p2t_distance (Maximum Player To Teleporter distance)
 # from an older version which did not use it.
 moremesecons_teleporter.enable_lbm (Enable Registration LBM) bool false
 
+[Timegate]
+
+# Minimum authorized length for the timegate signal. Timegates with a shorter time will not respond.
+moremesecons_timegate.min_delay (Minimum timegate delay) float 0.5
+
 [Wireless]
 
 # Whether to enable the wireless jammer node

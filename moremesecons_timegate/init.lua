@@ -1,3 +1,5 @@
+local MIN_DELAY = moremesecons.setting("timegate", "min_delay", 0.5)
+
 local timegate_get_output_rules = function(node)
 	local rules = {{x = 0, y = 0, z = 1}}
 	for _ = 0, node.param2 do
@@ -14,25 +16,28 @@ local timegate_get_input_rules = function(node)
 	return rules
 end
 
--- Functions that are called after the delay time
+local function turnoff(pos, _, node)
+	if mesecon.is_receptor_on(node.name) then
+		node.name = "moremesecons_timegate:timegate_off"
+		minetest.swap_node(pos, node)
+		mesecon.receptor_off(pos)
+	end
+end
 
-local function timegate_activate(pos, node)
+local function turnon(pos, node)
 	-- using a meta string allows writing the time in hexadecimals
 	local time = tonumber(minetest.get_meta(pos):get_string("time"))
-	if not time then
+	if not (time and time >= MIN_DELAY) then
 		return
 	end
-	node.name = "moremesecons_timegate:timegate_on"
-	minetest.swap_node(pos, node)
-	mesecon.receptor_on(pos)
-	minetest.after(time, function()
-		local node = minetest.get_node(pos)
-		if node.name == "moremesecons_timegate:timegate_on" then
-			mesecon.receptor_off(pos)
-			node.name = "moremesecons_timegate:timegate_off"
-			minetest.swap_node(pos, node)
-		end
-	end)
+	-- restart the timer when the input was turned off and on again
+	minetest.get_node_timer(pos):start(time)
+
+	if mesecon.is_receptor_off(node.name) then
+		node.name = "moremesecons_timegate:timegate_on"
+		minetest.swap_node(pos, node)
+		mesecon.receptor_on(pos)
+	end
 end
 
 local boxes = {{ -6/16, -8/16, -6/16, 6/16, -7/16, 6/16 },		-- the main slab
@@ -78,7 +83,8 @@ mesecon.register_node("moremesecons_timegate:timegate", {
 		and not minetest.is_protected(pos, player:get_player_name()) then
 			minetest.get_meta(pos):set_string("time", fields.time)
 		end
-	end
+	end,
+	on_timer = turnoff
 },{
 		tiles = {
 			"moremesecons_timegate_off.png",
@@ -99,7 +105,7 @@ mesecon.register_node("moremesecons_timegate:timegate", {
 			effector =
 			{
 				rules = timegate_get_input_rules,
-				action_on = timegate_activate
+				action_on = turnon
 			}
 		},
 },{
@@ -120,6 +126,7 @@ mesecon.register_node("moremesecons_timegate:timegate", {
 			},
 			effector = {
 				rules = timegate_get_input_rules,
+				action_on = turnon
 			}
 		},
 })
