@@ -42,12 +42,13 @@ mesecon.register_node("moremesecons_injector_controller:injector_controller", {
 	drawtype = "nodebox",
 	inventory_image = "moremesecons_injector_controller_off.png",
 	paramtype = "light",
-	paramtype2 = "facedir",
+	paramtype2 = "4dir",
 	node_box = {
 		type = "fixed",
 		fixed = {{-8/16, -8/16, -8/16, 8/16, -7/16, 8/16 }},
 	},
 	on_timer = on_timer,
+	on_rotate = mesecon.on_rotate,
 },{
 	tiles = {"moremesecons_injector_controller_off.png", "moremesecons_injector_controller_side.png", "moremesecons_injector_controller_side.png"},
 	groups = {dig_immediate=2},
