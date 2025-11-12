@@ -46,9 +46,14 @@ local object_detector_scan = function (pos)
 				return true
 			end
 			local isname = luaentity.name
+			-- If the item is present as dropped item entity:
+			local bitemname = (isname == "__builtin:item" and ItemStack(luaentity.itemstring):get_name())
 			for _, name in ipairs(scan_names) do
-				if isname == name or (isname == "__builtin:item" and luaentity.itemstring == name) then
-					return true
+				if name == isname then
+					return true -- object name matches
+				end
+				if name == bitemname then
+					return true -- item of the item entity matches
 				end
 			end
 		end

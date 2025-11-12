@@ -1,6 +1,6 @@
 read_globals = {
 	-- Defined by Minetest
-	"minetest", "vector", "PseudoRandom", "VoxelArea", "table",
+	"minetest", "vector", "PseudoRandom", "VoxelArea", "table", "ItemStack",
 
 	-- Mods
 	"digiline", "default", "creative",
