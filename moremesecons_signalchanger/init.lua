@@ -41,10 +41,11 @@ mesecon.register_node("moremesecons_signalchanger:signalchanger", {
 	inventory_image = "moremesecons_signalchanger_off.png",
 	groups = {dig_immediate = 2},
 	paramtype = "light",
-	paramtype2 = "facedir",
+	paramtype2 = "4dir",
 	drawtype = "nodebox",
 	selection_box = nodebox,
 	node_box = nodebox,
+	on_rotate = mesecon.on_rotate,
 },{
 	groups = {dig_immediate = 2},
 	mesecons = {

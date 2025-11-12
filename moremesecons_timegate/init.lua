@@ -71,7 +71,7 @@ mesecon.register_node("moremesecons_timegate:timegate", {
 		fixed = boxes
 	},
 	paramtype = "light",
-	paramtype2 = "facedir",
+	paramtype2 = "4dir",
 	sunlight_propagates = true,
 	is_ground_content = true,
 	sounds = default.node_sound_stone_defaults(),
@@ -84,7 +84,8 @@ mesecon.register_node("moremesecons_timegate:timegate", {
 			minetest.get_meta(pos):set_string("time", fields.time)
 		end
 	end,
-	on_timer = turnoff
+	on_timer = turnoff,
+	on_rotate = mesecon.on_rotate
 },{
 		tiles = {
 			"moremesecons_timegate_off.png",

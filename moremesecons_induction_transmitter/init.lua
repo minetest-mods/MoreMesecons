@@ -58,6 +58,7 @@ mesecon.register_node("moremesecons_induction_transmitter:induction_transmitter"
 			{-0.25, -0.25, -0.5, 0.25, 0.25, -0.1875},
 		},
 	},
+	on_rotate = mesecon.on_rotate,
 }, {
 	tiles = {"default_mese_block.png"},
 	groups = {cracky = 3},
