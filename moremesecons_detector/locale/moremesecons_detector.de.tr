@@ -1,0 +1,5 @@
+# textdomain:moremesecons_detector
+Name(s) of awards to scan for=Name(n) der benötigten Awards
+Radius=Radius
+Faction to scan for=Benötigte Faction
+Name of item to scan for (empty for any)=Zu suchender Itemstring (Leer für alles)
